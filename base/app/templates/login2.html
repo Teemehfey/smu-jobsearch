@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Login</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{{url_for('static',filename='vendor/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{{url_for('static',filename='css/styles.css')}}" rel="stylesheet">
+    <link href="{{url_for('static',filename='css/animate.css')}}" rel="stylesheet">
+
+  </head>
+
+  <body class="login-bg">
+
+
+    <div id="myModal" class="modal animated fadeInUp" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+
+      <div class="modal-body">
+        <br>
+        <img src="{{url_for('static',filename='img/$MU_blk.png')}}" width="auto" height="74" alt="" style="padding-left:10px;">
+        <br><p><i>Curated for poor college students.</i></p>
+        <br>
+        {% if messages == True %}
+        <div class="alert alert-danger" role="alert">
+      Wrong Username or Password.
+    </div>
+      {% endif %}
+        <form action="" method="post">
+          {{ form.hidden_tag() }}
+            <div class="form-group">
+              <h5><b>Sign in</b></h5>
+              <br>
+              <label for="exampleInputEmail1">Email</label>
+              {{ form.email(size=32, class_ ='form-control',placeholder="Email") }}
+              <!-- <input type="email" class="form-control" id="InputEmail" aria-describedby="emailHelp" placeholder="Enter email"> -->
+              <!-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
+            </div>
+            <div class="form-group">
+              <label for="exampleInputPassword1">Password</label>
+              <!-- <input type="password" class="form-control" id="InputPassword" placeholder="Password"> -->
+              {{ form.password(size=32, class_='form-control',placeholder="Password") }}
+            </div>
+            <br>
+            <!-- <button type="submit" class="btn btn-primary">Submit</button> -->
+            {{ form.submit(class_='btn btn-primary') }}
+            <br><br>
+            <a href="/register">New User?</a>
+      </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <!-- Bootstrap core JavaScript -->
+
+    <script src="{{url_for('static',filename='vendor/jquery/jquery.min.js')}}"></script>
+    <script src="{{url_for('static',filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
+    <script>
+    $('#myModal').modal({
+      backdrop: 'static'
+    })
+    $('#myModal').modal('show')
+    </script>
+
+  </body>
+
+</html>

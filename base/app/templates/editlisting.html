@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>View Listing</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{{url_for('static',filename='vendor/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{{url_for('static',filename='css/styles.css')}}" rel="stylesheet">
+    <link href="{{url_for('static',filename='css/animate.css')}}" rel="stylesheet">
+      <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.min.css" rel="stylesheet"/>
+    <!-- <link href="css/4-col-portfolio.css" rel="stylesheet"> -->
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="{{url_for('static',filename='vendor/jquery/jquery.min.js')}}"></script>
+    <script src="{{url_for('static',filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
+
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
+    <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"/> -->
+
+
+    <!-- Javascript Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+    <script src="https://unpkg.com/popmotion/dist/popmotion.global.min.js"></script>
+
+  </head>
+
+  <body class="index-bg">
+
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+      <div class="container">
+        <a class="navbar-brand" href="#" style="padding-top: 10px;padding-right:25px;"><img src="{{url_for('static',filename='img/$MU.png')}}" width="auto" height="30" alt=""></a>
+        <a class="navbar-brand" style="color:#fff; padding-bottom: 3px;">Welcome,</a>
+        <a class="navbar-brand" href="#"><i><u>{{current_user.email}}</u></i></a>
+
+
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav ml-auto">
+
+          {% if current_user.role == 'admin' %}
+
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('index_admin') }}">Dashboard</a>
+            </li>
+
+            <!-- <li class="nav-item">
+              <a class="nav-link" href="" data-toggle="modal" data-target="#myModal" data-backdrop="static" data-keyboard="false">New Listing</a>
+            </li> -->
+
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('mylistings')}}">My Listings
+            </a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+            </li>
+
+            {% endif %}
+
+            {% if current_user.role == 'regular' %}
+
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('index_reg') }}">Featured Jobs</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Find Jobs</a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" href="">My Jobs</a>
+            </li>
+
+
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+            </li>
+
+            {% endif %}
+
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Page Content -->
+    <br><br><br><br>
+    {% if changed == True %}
+    <div class="container alert alert-secondary animated fadeIn w-50" role="alert" style="text-align:center;">
+      <h5>Changes Saved</h5>
+      </div>
+    {% endif %}
+    <div class="container d-flex justify-content-center">
+      <br><br><br><br>
+
+
+        <br>
+
+      <div class="card animated fadeInLeft w-75">
+        <div class="card-header">
+          <a href="{{ url_for('mylistings')}}"><p class="text-info">Back to Listings</p></a>
+      <h1 style="text-align:center;margin-top:25px;">Edit Listing</h1>
+    </div>
+        <br>
+        <div class="card-body">
+        <div style="text-align:center">
+                <form method="post">
+                  {{ form.hidden_tag() }}
+                  <div class="form-group">
+                    <label for="recipient-name" class="col-form-label">Job Title</label><br>
+                    <!-- <input type="text" class="form-control" id="job-title" size=50> -->
+                    {{ form.title(size=40, class_="form-control", placeholder="Job Title") }}
+                  </div>
+                  <div class="form-group">
+                    <label for="recipient-name" class="col-form-label">Organization Name</label><br>
+                    <!-- <input type="text" class="form-control" id="job-title" size=50> -->
+                    {{ form.organization(size=40, class_="form-control", placeholder="Organization") }}
+                  </div>
+
+                  <div class="form-group">
+                    <label for="message-text" class="col-form-label">Job Description</label>
+                    <!-- <textarea class="form-control" id="message-text" size=80></textarea> -->
+                    {{ form.description(size=80, class_="form-control", placeholder="Job Description", rows="12") }}
+                  </div>
+
+                  <div class="form-group">
+                    <div class="row">
+                    <div class="col-sm-6">
+                    <label for="recipient-name" class="col-form-label">Pay (In $)</label>
+                    <!-- <input type="text" class="form-control" id="job-title" size=50> -->
+                    {{ form.pay(size=20, class_="form-control", placeholder="Enter a number") }}
+                  </div>
+
+                  <div class="col-sm-6" style="padding-top:5px">
+                    <label for="inputState">Frequency</label>
+                    {{ form.pay_frequency(class_="form-control")}}
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+        <br>
+
+          <!-- <div class="form-group"> -->
+            <!-- <div class="row"> -->
+            {{ form.submit(class_='btn btn-info btn-lg btn-block') }}
+              </form>
+              <br>
+              <!-- <form method="post">
+                {{ form2.hidden_tag() }}
+              {{ form2.submit(class_='btn btn-danger btn-lg btn-block') }}
+
+              </form> -->
+            <!-- </div> -->
+            <button type="button" class="btn btn-danger btn-lg btn-block" data-toggle="modal" data-target="#exampleModalCenter">
+              Delete Listing
+            </button>
+          </div>
+          </div>
+
+
+
+  <!-- Modal -->  <!-- Modal -->  <!-- Modal -->  <!-- Modal -->  <!-- Modal -->  <!-- Modal -->  <!-- Modal -->  <!-- Modal -->  <!-- Modal -->  <!-- Modal -->  <!-- Modal -->  <!-- Modal -->  <!-- Modal -->  <!-- Modal -->
+  <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Warning</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete this listing for ever and ever?
+        <br>
+        You can't retrieve this afterwards.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+        <form method="post">
+          {{ form2.hidden_tag() }}
+        {{ form2.submit(class_='btn btn-danger') }}
+
+        </form>
+        <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+  <!-- Modal -->  <!-- Modal -->  <!-- Modal -->  <!-- Modal -->  <!-- Modal -->  <!-- Modal -->  <!-- Modal -->  <!-- Modal -->  <!-- Modal -->  <!-- Modal -->  <!-- Modal -->  <!-- Modal -->  <!-- Modal -->  <!-- Modal -->
+
+
+        </div>
+        <br><br>
+  </body>
+
+</html>

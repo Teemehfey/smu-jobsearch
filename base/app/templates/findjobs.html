@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Find Jobs</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{{url_for('static',filename='vendor/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{{url_for('static',filename='css/styles.css')}}" rel="stylesheet">
+    <link href="{{url_for('static',filename='css/animate.css')}}" rel="stylesheet">
+
+  </head>
+
+  <body class="index-reg-bg">
+
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+      <div class="container">
+        <a class="navbar-brand" href="#" style="padding-top: 10px;padding-right:25px;"><img src="{{url_for('static',filename='img/$MU.png')}}" width="auto" height="30" alt=""></a>
+        <a class="navbar-brand" style="color:#fff; padding-bottom: 3px;">Welcome,</a><a class="navbar-brand" href="{{ url_for('myprofile',id=current_user.id)}}"><i><u>{{current_user.email}}</u></i></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('index_reg') }}">Featured Jobs</a>
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link" href="{{ url_for('findjobs') }}">Find Jobs</a>
+            </li>
+
+            {% if current_user.role == 'regular' %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('myjobs') }}">My Jobs</a>
+            </li>
+            {% endif %}
+
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+            </li>
+
+
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Page Content -->
+    <div class="container">
+      <br><br><br><br><br>
+
+
+      <div id="main">
+        <h1 style="text-align:center">Find Jobs</h1>
+
+        <div class="d-flex justify-content-center">
+        <button id="btnsidebar" onclick="openNav()" class="btn btn-danger animated fadeIn" style="padding: 7px 120px;">Search...</button>
+      </div>
+
+        <div id="mySidenav" class="sidenav">
+          <br><br><br><br>
+
+          <div id="mySidenav_content" style="text-align:center">
+
+            Work in Progress lel<br><br>
+            Come back later nigga<br><br>
+        <!-- <form>
+        <input class="form-control" placeholder="Enter a keyword or two..." aria-label="Search" style="padding-right:5px;padding-left:5px;">
+          <br><br>
+          <button class="btn btn-outline-success" type="submit">Search</button>
+        </form> -->
+        <button type='button' class="btn btn-outline-danger" onclick="closeNav()" style="font-size:15px;">Close</button>
+      </div>
+        </div>
+      <!-- </div> -->
+
+
+        <br>
+
+        <div class="card-column">
+      {% for job in all_jobs %}
+        <div class="card animated fadeInUp">
+          <div class="card-body">
+            <h5 class="card-title">{{ job.title }} - {{ job.organization }}</h5>
+
+            <!-- <p class="card-text">{{ job.description }}</p> -->
+            <!-- <p class="card-text"><b>${{ job.pay }}, {{ job.pay_frequency }}</b></p> -->
+            <p class="card-text"><small class="text-muted">Posted on {{ job.timestamp.strftime('%Y-%m-%d') }} by {{ job.email }}</small></p>
+              <a href="{{ url_for('applyjob', id=job.id) }}"><button type="button" class="btn btn-dark">View</button></a>
+          </div>
+        </div>
+        <br>
+      {% endfor %}
+    </div>
+
+
+{% if next_url %}
+<a class="btn-info btn-lg btn-block animated fadeInUp" style="text-align:center;" href="{{ next_url }}">Older posts</a>
+{% endif %}
+
+ {% if prev_url %}
+ <a class="btn-secondary btn-lg btn-block animated fadeInUp" style="text-align:center;" href="{{ prev_url }}">Newer posts</a>
+ {% endif %}
+
+        <br><br>
+        </div>
+    </div>
+    <!-- /.container -->
+    <script>
+    /* Set the width of the side navigation to 250px */
+        function openNav() {
+        document.getElementById("mySidenav").style.width = "300px";
+        document.getElementById("main").style.marginLeft = "250px";
+        document.getElementById("btnsidebar").style.visibility='hidden'
+        document.getElementById("mySidenav_content").style.visibility='visible'
+        }
+
+        /* Set the width of the side navigation to 0 and the left margin of the page content to 0 */
+        function closeNav() {
+        document.getElementById("mySidenav").style.width = "0";
+        document.getElementById("main").style.marginLeft = "0";
+        document.getElementById("btnsidebar").style.visibility='visible'
+        document.getElementById("mySidenav_content").style.visibility='hidden'
+        }
+
+
+
+    </script>
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="{{url_for('static',filename='vendor/jquery/jquery.min.js')}}"></script>
+    <script src="{{url_for('static',filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
+
+  </body>
+
+</html>

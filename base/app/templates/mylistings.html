@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>My Listings</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{{url_for('static',filename='vendor/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{{url_for('static',filename='css/styles.css')}}" rel="stylesheet">
+    <link href="{{url_for('static',filename='css/animate.css')}}" rel="stylesheet">
+      <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.min.css" rel="stylesheet"/>
+    <!-- <link href="css/4-col-portfolio.css" rel="stylesheet"> -->
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="{{url_for('static',filename='vendor/jquery/jquery.min.js')}}"></script>
+    <script src="{{url_for('static',filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
+
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
+    <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"/> -->
+
+
+    <!-- Javascript Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+    <script src="https://unpkg.com/popmotion/dist/popmotion.global.min.js"></script>
+
+  </head>
+
+  <body class="index-bg">
+
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+      <div class="container">
+        <a class="navbar-brand" href="#" style="padding-top: 10px;padding-right:25px;"><img src="{{url_for('static',filename='img/$MU.png')}}" width="auto" height="30" alt=""></a>
+        <a class="navbar-brand" style="color:#fff; padding-bottom: 3px;">Welcome,</a>
+        <a class="navbar-brand" href="#"><i><u>{{current_user.email}}</u></i></a>
+
+
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav ml-auto">
+
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('index_admin') }}">Dashboard</a>
+            </li>
+
+            <!-- <li class="nav-item">
+              <a class="nav-link" href="" data-toggle="modal" data-target="#myModal" data-backdrop="static" data-keyboard="false">New Listing</a>
+            </li> -->
+
+            <li class="nav-item active">
+              <a class="nav-link" href="{{ url_for('mylistings')}}">My Listings
+            </a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+            </li>
+
+
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Page Content -->
+    <div class="container">
+      <br><br><br><br><br>
+
+      <h1 style="text-align:center">My Listings</h1>
+        <br>
+
+
+        {% for error in form.pay.errors %}
+        <div class="alert alert-secondary animated fadeIn" role="alert" style="text-align:center;">
+          <h5>{{ error }}</h5>
+          </div>
+          {% endfor %}
+
+
+    <button type="button" class="btn btn-light btn-lg btn-block" data-toggle="modal" data-target="#myModal" data-backdrop="static" data-keyboard="false">Create a New Listing...</button>
+      <br>
+
+          <div class="card-column">
+        {% for job in all_jobs %}
+          <div class="card animated fadeInUp">
+            <div class="card-body">
+              <h5 class="card-title">{{ job.title }}</h5>
+              <h6 class="card-title">{{ job.organization }}</h6>
+              <!-- <p class="card-text">{{ job.description }}</p> -->
+              <p class="card-text"><b>${{ job.pay }}, {{ job.pay_frequency }}</b></p>
+              <p class="card-text"><small class="text-muted">Posted on {{ job.timestamp.strftime('%Y-%m-%d') }}</small></p>
+              <a href="{{ url_for('editlisting', id=job.id) }}"><button type="button" class="btn btn-info">Edit Listing</button></a>
+              <a href="{{ url_for('viewapplicants', id=job.id) }}"><button type="button" class="btn btn-success">View Applicants</button></a>
+            </div>
+          </div>
+          <br>
+        {% endfor %}
+      </div>
+
+
+
+
+
+
+
+
+
+    </div>
+
+<!-- MODAL OPEN --><!-- MODAL OPEN --><!-- MODAL OPEN --><!-- MODAL OPEN --><!-- MODAL OPEN --><!-- MODAL OPEN --><!-- MODAL OPEN --><!-- MODAL OPEN --><!-- MODAL OPEN --><!-- MODAL OPEN -->
+<!-- MODAL OPEN --><!-- MODAL OPEN --><!-- MODAL OPEN --><!-- MODAL OPEN --><!-- MODAL OPEN --><!-- MODAL OPEN --><!-- MODAL OPEN --><!-- MODAL OPEN --><!-- MODAL OPEN --><!-- MODAL OPEN -->
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="myModalLabel">Create New Listing</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+        <form method="post">
+          {{ form.hidden_tag() }}
+          <div class="form-group">
+            <label for="recipient-name" class="col-form-label">Job Title</label><br>
+            <!-- <input type="text" class="form-control" id="job-title" size=50> -->
+            {{ form.title(size=40, class_="form-control", placeholder="Job Title") }}
+          </div>
+          <div class="form-group">
+            <label for="recipient-name" class="col-form-label">Organization Name</label><br>
+            <!-- <input type="text" class="form-control" id="job-title" size=50> -->
+            {{ form.organization(size=40, class_="form-control", placeholder="Organization") }}
+          </div>
+
+          <div class="form-group">
+            <label for="message-text" class="col-form-label">Job Description</label>
+            <!-- <textarea class="form-control" id="message-text" size=80></textarea> -->
+            {{ form.description(size=80, class_="form-control", placeholder="Job Description", rows="10") }}
+          </div>
+
+          <div class="form-group">
+            <div class="row">
+            <div class="col-sm-6">
+            <label for="recipient-name" class="col-form-label">Pay (In $)</label>
+            <!-- <input type="text" class="form-control" id="job-title" size=50> -->
+            {{ form.pay(size=20, class_="form-control", placeholder="Enter a number") }}
+          </div>
+
+          <div class="col-sm-6" style="padding-top:5px">
+            <label for="inputState">Frequency</label>
+            {{ form.pay_frequency(class_="form-control")}}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- <div class="form-group">
+        <label for="message-text" class="col-form-label">5 Related Keywords (Separate with comma)</label>
+        <p style='font-size:13px;'><i>Users will find your jobs via these keywords!</i></p>
+        <textarea class="form-control" id="message-text" size=80></textarea>
+      </div> -->
+
+<br>
+
+<!-- <div class="form-group">
+    <div class="row">
+      <div class="col-sm-6">
+        <label for="input-group date">Date Start</label>
+        <div class="input-group date" data-provide="datepicker">
+
+
+            <div class="input-group-addon">
+            </div>
+          </div>
+        </div>
+
+          <div class="col-sm-6">
+            <label for="input-group date">Date End</label>
+            <div class="input-group date" data-provide="datepicker">
+
+
+          <div class="input-group-addon">
+        </div>
+      </div>
+    </div>
+  </div>
+</div> -->
+    <!-- <br>
+    <div class="form-group" style="text-align:center;">
+      <label class="btn btn-primary bg-info" for="my-file-selector">
+    <input id="my-file-selector" type="file" style="display:none" accept=".jpg,.gif,.png"
+    onchange="$('#upload-file-info').html(this.files[0].name)">
+    Upload a relevant image
+      </label>
+      <span class='label label-info' id="upload-file-info"></span>
+    </div> -->
+
+
+
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <!-- <button type="button" class="btn btn-primary bg-info">Create Listing</button> -->
+        {{ form.submit(class_='btn btn-info') }}
+      </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- END MODAL --><!-- END MODAL --><!-- END MODAL --><!-- END MODAL --><!-- END MODAL --><!-- END MODAL --><!-- END MODAL -->
+<!-- END MODAL --><!-- END MODAL --><!-- END MODAL --><!-- END MODAL --><!-- END MODAL --><!-- END MODAL --><!-- END MODAL -->
+
+    <script>
+
+</script>
+
+  </body>
+
+</html>

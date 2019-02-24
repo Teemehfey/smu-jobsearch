@@ -1,0 +1,1 @@
+<a href="skype:sc.chronology?call">Call the Skype Echo / Sound Test Service</a>

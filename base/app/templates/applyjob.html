@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Apply</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{{url_for('static',filename='vendor/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{{url_for('static',filename='css/styles.css')}}" rel="stylesheet">
+    <link href="{{url_for('static',filename='css/animate.css')}}" rel="stylesheet">
+
+  </head>
+
+  <body class="index-reg-bg">
+
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+      <div class="container">
+        <a class="navbar-brand" href="#" style="padding-top: 10px;padding-right:25px;"><img src="{{url_for('static',filename='img/$MU.png')}}" width="auto" height="30" alt=""></a>
+        <a class="navbar-brand" style="color:#fff; padding-bottom: 3px;">Welcome,</a><a class="navbar-brand" href="{{ url_for('myprofile',id=current_user.id)}}"><i><u>{{current_user.email}}</u></i></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('index_reg') }}">Featured Jobs</a>
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link" href="{{ url_for('findjobs') }}">Find Jobs</a>
+            </li>
+
+            {% if current_user.role == 'regular' %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('myjobs') }}">My Jobs</a>
+            </li>
+            {% endif %}
+
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+            </li>
+
+
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Page Content -->
+    <div class="container">
+      <br><br><br><br><br>
+
+      <div class="card animated fadeInLeft">
+
+          <div class="card-header">
+            <a href="{{ url_for('findjobs')}}"><p class="text-info">Back to Jobs</p></a>
+            <h1 style="text-align:center;margin-top:25px;">- {{ job.title }} -</h1>
+            <h4 style="text-align:center">{{ job.organization }}</h4>
+          </div>
+          <br><br>
+          <div class="card-body">
+            <h6 style="text-align:center"><u>Job Description:</u></h6>
+            <p style="text-align:center">{{ job.description }}</p>
+
+
+          <br><br>
+
+            <h6 style="text-align:center"><u>Pay:</u></h6>
+            <p style="text-align:center">${{ job.pay }}, {{ job.pay_frequency }}</p>
+            <!-- <p class="card-text"><b>${{ job.pay }}, {{ job.pay_frequency }}</b></p> -->
+            <!-- <p class="card-text"><small class="text-muted">Posted on {{ job.timestamp.strftime('%Y-%m-%d') }} by {{ job.email }}</small></p> -->
+
+
+          <br><br>
+          <div class="d-flex justify-content-center">
+            {% if applied == False %}
+          <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#exampleModal">
+            Apply for this job
+          </button>
+          {% endif %}
+
+          {% if applied == True %}
+          <button type="button" class="btn btn-secondary btn-lg" disabled>
+            You have already applied for this job.
+          </button>
+          {% endif %}
+        </div>
+
+      </div>
+    </div>
+
+
+
+
+
+<!-- modal --><!-- modal --><!-- modal --><!-- modal --><!-- modal --><!-- modal --><!-- modal --><!-- modal --><!-- modal --><!-- modal --><!-- modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Submit Application?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to apply for this job?
+        <br>
+        Do remember to review the job description carefully.
+        <br><br>
+        If a resume is required, do ensure that your resume has been uploaded.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">No</button>
+        <form method="post">
+        <!-- <button type="button" class="btn btn-success">Apply</button> -->
+        {{ form.hidden_tag() }}
+      {{ form.submit(class_='btn btn-success') }}
+      </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- modal --><!-- modal --><!-- modal --><!-- modal --><!-- modal --><!-- modal --><!-- modal --><!-- modal --><!-- modal --><!-- modal --><!-- modal -->
+
+
+
+        <br><br>
+    </div>
+    <!-- /.container -->
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="{{url_for('static',filename='vendor/jquery/jquery.min.js')}}"></script>
+    <script src="{{url_for('static',filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
+
+  </body>
+
+</html>
