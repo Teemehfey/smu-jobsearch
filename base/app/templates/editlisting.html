@@ -105,8 +105,18 @@
       <h5>Changes Saved</h5>
       </div>
     {% endif %}
+
+    {% for error in errors %}
+    <div class="container alert alert-secondary animated fadeIn w-50" role="alert" style="text-align:center;">
+      <h5>{{ error }}</h5>
+      </div>
+
+    {% endfor %}
+
     <div class="container d-flex justify-content-center">
       <br><br><br><br>
+
+
 
 
         <br>
@@ -135,7 +145,7 @@
                   <div class="form-group">
                     <label for="message-text" class="col-form-label">Job Description</label>
                     <!-- <textarea class="form-control" id="message-text" size=80></textarea> -->
-                    {{ form.description(size=80, class_="form-control", placeholder="Job Description", rows="12") }}
+                    {{ form.description(size=80, class_="form-control", placeholder="Job Description", rows="6") }}
                   </div>
 
                   <div class="form-group">
@@ -153,6 +163,14 @@
                   </div>
                 </div>
               </div>
+
+              <div class="form-group">
+                <label for="message-text" class="col-form-label">Keywords</label>
+                <!-- <textarea class="form-control" id="message-text" size=80></textarea> -->
+                {{ form.keywords(size=80, id="keywords", class_="form-control", placeholder="Keywords", rows="6") }}
+              </div>
+              <div id='result'></div>
+
             </div>
 
         <br>
@@ -209,5 +227,37 @@
         </div>
         <br><br>
   </body>
+
+
+      <script>
+      function wordsToList(str) {
+        var splitted = str.split(',');
+        return splitted;
+      }
+
+      var keywordarea = document.getElementById("keywords");
+      var result   = document.getElementById("result");
+      var submit = document.getElementById("submit");
+
+      keywordarea.addEventListener("input", function(){
+      var v = wordsToList( this.value );
+      if ( v == '' ) {
+        result.innerHTML = (
+          "0 Keywords Entered"
+        );
+      } else if ( v.length < 11 ) {
+        result.innerHTML = (
+          v.length + " Keywords Entered"
+        );
+      }
+       else {
+        result.innerHTML = (
+          "<p class='text-danger'>Keyword Count Exceeded</p>"
+        );
+      }
+
+    }, false);
+      </script>
+
 
 </html>

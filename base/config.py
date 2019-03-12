@@ -16,9 +16,6 @@ class Config(object):
     'port': '5432'
 }
 
-    DEBUG = True
-
-
     SQLALCHEMY_DATABASE_URI = 'postgresql://%(user)s:\
 %(pw)s@%(host)s:%(port)s/%(db)s' % POSTGRES
     SQLALCHEMY_TRACK_MODIFICATIONS = False

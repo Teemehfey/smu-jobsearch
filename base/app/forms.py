@@ -24,7 +24,7 @@ class RegistrationForm(FlaskForm):
             raise ValidationError('Please use a different email address.')
 
 FREQ_TABLE = ('Per Hour','Per Day','Total')
-
+REJECT_TABLE = ('All Positions Filled', 'Skills Mismatch', 'Others')
 
 class JobPostForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
@@ -33,6 +33,7 @@ class JobPostForm(FlaskForm):
     description = StringField(u'Text', widget=TextArea(),validators=[DataRequired()])
     pay = FloatField('Pay', validators=[DataRequired()])
     pay_frequency = SelectField('Frequency', choices=[(option,option) for option in FREQ_TABLE])
+    keywords = StringField(u'Text', widget=TextArea())
     # start_date = DateField('Date Start',format='%M/%D/%Y')
     # end_date = DateField('Date End',format='%M/%D/%Y')
     submit = SubmitField('Create Listing')
@@ -44,6 +45,7 @@ class EditListingForm(FlaskForm):
     description = StringField(u'Text', widget=TextArea(),validators=[DataRequired()])
     pay = FloatField('Pay', validators=[DataRequired()])
     pay_frequency = SelectField('Frequency', choices=[(option,option) for option in FREQ_TABLE])
+    keywords = StringField(u'Text', widget=TextArea())
     # start_date = DateField('Date Start',format='%M/%D/%Y')
     # end_date = DateField('Date End',format='%M/%D/%Y')
     submit = SubmitField('Save Listing')
@@ -61,10 +63,16 @@ class EditProfileForm(FlaskForm):
     gender = SelectField('Gender', choices=[(option,option) for option in SEX_TABLE])
     bio = StringField(u'Text', widget=TextArea())
     phone_no = IntegerField('Phone Number')
+    keywords = StringField(u'Text', widget=TextArea())
     submit = SubmitField('Save Profile')
 
 class AcceptApplicationBtn(FlaskForm):
     submit = SubmitField('Accept')
 
 class RejectApplicationBtn(FlaskForm):
-    submit = SubmitField('Reject')
+   reject_choice = SelectField('Because', choices=[(option, option) for option in REJECT_TABLE])
+   submit = SubmitField('Reject')
+
+class ListingQueryForm(FlaskForm):
+    keyword = StringField('Keyword',validators=[DataRequired()])
+    submit = SubmitField('Search')

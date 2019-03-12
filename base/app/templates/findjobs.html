@@ -13,6 +13,10 @@
     <!-- Bootstrap core CSS -->
     <link href="{{url_for('static',filename='vendor/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet">
 
+    <!-- Jquery -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+
     <!-- Custom styles for this template -->
     <link href="{{url_for('static',filename='css/styles.css')}}" rel="stylesheet">
     <link href="{{url_for('static',filename='css/animate.css')}}" rel="stylesheet">
@@ -38,7 +42,9 @@
             <li class="nav-item active">
               <a class="nav-link" href="{{ url_for('findjobs') }}">Find Jobs</a>
             </li>
-
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('findjobs') }}">More Jobs</a>
+            </li>
             {% if current_user.role == 'regular' %}
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for('myjobs') }}">My Jobs</a>
@@ -61,40 +67,51 @@
 
 
       <div id="main">
+        <div class='card-column'>
         <h1 style="text-align:center">Find Jobs</h1>
-
-        <div class="d-flex justify-content-center">
-        <button id="btnsidebar" onclick="openNav()" class="btn btn-danger animated fadeIn" style="padding: 7px 120px;">Search...</button>
-      </div>
-
-        <div id="mySidenav" class="sidenav">
-          <br><br><br><br>
-
-          <div id="mySidenav_content" style="text-align:center">
-
-            Work in Progress lel<br><br>
-            Come back later nigga<br><br>
-        <!-- <form>
-        <input class="form-control" placeholder="Enter a keyword or two..." aria-label="Search" style="padding-right:5px;padding-left:5px;">
-          <br><br>
-          <button class="btn btn-outline-success" type="submit">Search</button>
-        </form> -->
-        <button type='button' class="btn btn-outline-danger" onclick="closeNav()" style="font-size:15px;">Close</button>
-      </div>
-        </div>
-      <!-- </div> -->
-
-
         <br>
 
-        <div class="card-column">
-      {% for job in all_jobs %}
-        <div class="card animated fadeInUp">
+        <div class="d-flex justify-content-center">
+
+            <form method='post' class='form-inline'>
+              {{ form.hidden_tag() }}
+
+              <div class="form-group mx-sm-3 mb-2">
+              {{ form.keyword(size=100, class_="form-control", placeholder="Search job-related keywords, separated by comma (e.g. Python, Tableau, Developer)") }}
+            </div>
+              {{ form.submit(class_='btn btn-danger mb-2') }}
+
+
+            </form>
+        </div>
+      </div>
+	<br>
+      {% if querystatus == 'success' %}
+      <div class="alert alert-success" role="alert">
+        Your search returned {{ count }} result(s).
+      </div>
+      {% elif querystatus == 'length' %}
+      <div class="alert alert-danger" role="alert">
+        Your search is too short.
+      </div>
+      {% elif querystatus == 'noresult' %}
+      <div class="alert alert-info" role="alert">
+        Your search returned no results.
+      </div>
+      {% endif %}
+      </div>
+
+
+        <!-- <br> -->
+
+
+        {% if querystatus == 'success' or querystatus == 'no query' %}
+        <div id='allCards' class="card-column">
+      {% for job in queried_jobs %}
+        <div class="card animated fadeInUp cardCount">
           <div class="card-body">
             <h5 class="card-title">{{ job.title }} - {{ job.organization }}</h5>
 
-            <!-- <p class="card-text">{{ job.description }}</p> -->
-            <!-- <p class="card-text"><b>${{ job.pay }}, {{ job.pay_frequency }}</b></p> -->
             <p class="card-text"><small class="text-muted">Posted on {{ job.timestamp.strftime('%Y-%m-%d') }} by {{ job.email }}</small></p>
               <a href="{{ url_for('applyjob', id=job.id) }}"><button type="button" class="btn btn-dark">View</button></a>
           </div>
@@ -102,40 +119,92 @@
         <br>
       {% endfor %}
     </div>
+    {% endif %}
 
-
-{% if next_url %}
-<a class="btn-info btn-lg btn-block animated fadeInUp" style="text-align:center;" href="{{ next_url }}">Older posts</a>
-{% endif %}
-
- {% if prev_url %}
- <a class="btn-secondary btn-lg btn-block animated fadeInUp" style="text-align:center;" href="{{ prev_url }}">Newer posts</a>
- {% endif %}
+    <div id='result' style='text-align:center'></div><br>
+    <button onclick='loadMore()' type='button' class='btn btn-block btn-light'>Load More</button>
 
         <br><br>
         </div>
     </div>
     <!-- /.container -->
+
     <script>
-    /* Set the width of the side navigation to 250px */
-        function openNav() {
-        document.getElementById("mySidenav").style.width = "300px";
-        document.getElementById("main").style.marginLeft = "250px";
-        document.getElementById("btnsidebar").style.visibility='hidden'
-        document.getElementById("mySidenav_content").style.visibility='visible'
-        }
 
-        /* Set the width of the side navigation to 0 and the left margin of the page content to 0 */
-        function closeNav() {
-        document.getElementById("mySidenav").style.width = "0";
-        document.getElementById("main").style.marginLeft = "0";
-        document.getElementById("btnsidebar").style.visibility='visible'
-        document.getElementById("mySidenav_content").style.visibility='hidden'
-        }
+        function loadMore(keywords,manyMore,count) {
 
+          var result = document.getElementById("result");
+          var keywords = {{ kw|safe}}
+          var listingCount = $('.cardCount').length;
+          console.log(listingCount);
+
+          var data = {'keywords':keywords,'listingCount':listingCount}
+          var csrf_token = "{{ csrf_token() }}";
+
+          if (listingCount >= 5) {
+          $.ajaxSetup({
+              beforeSend: function(xhr, settings) {
+                  if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                      xhr.setRequestHeader("X-CSRFToken", csrf_token);
+                  }
+              }
+          });
+
+          $.ajax({
+          type: "POST",
+          url: "/findjobs/ajax",
+          data: JSON.stringify(data),
+          contentType: "application/json; charset=utf-8", // this
+          dataType: "json", // and this
+          success: function (msg) {
+             console.log('success')
+             // console.log(msg['data']);
+             var data = msg['data'];
+             console.log(msg['data'])
+             if (data.length > 0) {
+             for (i=0; i<data.length; i++) {
+               console.log(data[i])
+               var id = data[i][0]
+               var title = data[i][1]
+               var organization = data[i][2]
+               var postdate = data[i][3]
+               var email=data[i][4]
+
+
+               var combined1 = title + " - " + organization
+               var combined2 = "Posted on " + postdate + " by " + email
+
+
+               var div = document.createElement("div");
+               div.innerHTML = "<div class='card animated fadeInUp cardCount'><div class='card-body'><h5 class'card-title'>"+combined1+"</h5><p class='card-text'><small class='text-muted'>"+combined2+"</small></p><a href='/applyjob/"+id+"'><button type='button' class='btn btn-dark'>View</button></a></div></div><br>";
+
+
+
+                document.getElementById("allCards").appendChild(div);
+
+             }
+           } else {
+             result.innerHTML = (
+               "<br>That's all folks!"
+             );
+           }
+
+            },
+          error: function (errormessage) {
+            console.log('failure')
+          }
+      });
+    }
+    else {
+      result.innerHTML = (
+        "<br>That's all folks!"
+      );
+    }
+  }
 
 
     </script>
+
 
     <!-- Bootstrap core JavaScript -->
     <script src="{{url_for('static',filename='vendor/jquery/jquery.min.js')}}"></script>

@@ -74,7 +74,7 @@
         <div class="card animated fadeInUp">
           <div class="card-body">
             <p style="font-size:8px;color:#b9b9b9">Application ID {{ j[0].id }} - Applied on {{ j[0].timestamp.strftime('%Y-%m-%d') }}</p>
-            <h5>{{ j[1].title }}</h5>
+            <a href="{{ url_for('applyjob', id=j[1].id) }}" class='text-dark'><h5>{{ j[1].title }}</h5></a>
             <p>{{ j[1].organization }}</p>
 
             {% if j[0].status == 'unread' %}
