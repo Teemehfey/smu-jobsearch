@@ -38,6 +38,9 @@
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for('findjobs') }}">Find Jobs</a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('findjobs') }}">More Jobs</a>
+            </li>
 
             {% if current_user.role == 'regular' %}
             <li class="nav-item">
@@ -65,6 +68,13 @@
           <div class="card-header">
             <h1 style="text-align:center;margin-top:25px;">My Profile</h1>
           </div>
+
+          {% for c in comment %}
+          <div class="alert alert-secondary animated fadeIn" role="alert" style="text-align:center;">
+            <h5 style='margin-top:9px'>{{ c }}</h5>
+            </div>
+            {% endfor %}
+
           <div class="card-body">
             <form method="post">
               {{ form.hidden_tag() }}
@@ -115,7 +125,19 @@
                 {{ form.bio(size="70", class_="form-control", placeholder="Garner sympathy by writing about how poor you are...", rows="7") }}
               </div>
 
-              <br>
+              <br><hr>
+
+              <div class="form-group">
+                <br>
+                <h5 style="text-align:center">Keywords</h5>
+                <!-- <textarea class="form-control" id="message-text" size=80></textarea> -->
+                {{ form.keywords(size="70", id="keywords", class_="form-control", placeholder="Enter up to 10 keywords (Separated by commas) that you are interested in...", rows="7") }}
+              </div>
+                <div style="text-align:center" id='result'></div>
+
+                <br><hr>
+
+
               <div class="d-flex justify-content-center">
               {{ form.submit(class_='btn btn-lg btn-dark') }}
             </div>
@@ -128,16 +150,40 @@
 
 
 
-<!-- modal --><!-- modal --><!-- modal --><!-- modal --><!-- modal --><!-- modal --><!-- modal --><!-- modal --><!-- modal --><!-- modal --><!-- modal -->
-
-
-<!-- modal --><!-- modal --><!-- modal --><!-- modal --><!-- modal --><!-- modal --><!-- modal --><!-- modal --><!-- modal --><!-- modal --><!-- modal -->
-
-
 
         <br><br>
     </div>
     <!-- /.container -->
+
+    <script>
+    function wordsToList(str) {
+      var splitted = str.split(',');
+      return splitted;
+    }
+
+    var keywordarea = document.getElementById("keywords");
+    var result   = document.getElementById("result");
+    var submit = document.getElementById("submit");
+
+    keywordarea.addEventListener("input", function(){
+    var v = wordsToList( this.value );
+    if ( v == '' ) {
+      result.innerHTML = (
+        "0 Keywords Entered"
+      );
+    } else if ( v.length < 11 ) {
+      result.innerHTML = (
+        v.length + " Keywords Entered"
+      );
+    }
+     else {
+      result.innerHTML = (
+        "<p class='text-danger'>Keyword Count Exceeded</p>"
+      );
+    }
+
+  }, false);
+    </script>
 
     <!-- Bootstrap core JavaScript -->
     <script src="{{url_for('static',filename='vendor/jquery/jquery.min.js')}}"></script>

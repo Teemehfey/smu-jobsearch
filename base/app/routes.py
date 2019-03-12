@@ -1,11 +1,13 @@
-import json
-from flask import render_template, flash, redirect, url_for, request
+import json, requests
+from flask import render_template, flash, redirect, url_for, request, jsonify
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, JobPostForm, EditListingForm, DeleteListingBtn, ApplyJobBtn, EditProfileForm, AcceptApplicationBtn, RejectApplicationBtn
+from app.forms import LoginForm, RegistrationForm, JobPostForm, EditListingForm, DeleteListingBtn, ApplyJobBtn, EditProfileForm, AcceptApplicationBtn, RejectApplicationBtn, ListingQueryForm
 from flask_login import current_user, login_user, logout_user,login_required
 from app.models import User, JobPost, Application
 from werkzeug.urls import url_parse
 from wtforms.validators import ValidationError
+from sqlalchemy import func, or_
+import socket
 
 @app.route('/weisheng',methods=['GET','POST'])
 def weisheng():
@@ -27,7 +29,7 @@ def weisheng():
 
     return render_template('login2.html', title='Sign In', form=form)
 
-@app.route('/weisheng2', methods=['GET', 'POST'])
+@app.route('/weisheng2', methods=['POST'])
 def weisheng2():
     not_smu_email = False
     if current_user.is_authenticated:
@@ -39,7 +41,7 @@ def weisheng2():
             user.set_password(form.password.data)
             db.session.add(user)
             db.session.commit()
-            return redirect(url_for('login2'))
+            return redirect(url_for('weisheng'))
         else:
             not_smu_email = True
             return render_template('register2.html', title='Register', form=form, not_smu_email=not_smu_email)
@@ -57,17 +59,120 @@ def index_reg():
     return render_template('index_reg.html', y=y, x=x, z=z)
 
 
-@app.route('/findjobs')
+def takeSecond(elem):
+    return elem[1]
+
+@app.route('/findjobs',methods=['GET','POST'])
 @login_required
 def findjobs():
-    page = request.args.get('page', 1, type=int)
-    all_jobs = JobPost.query.filter().order_by(JobPost.timestamp.desc()).paginate(
-        page, app.config['POSTS_PER_PAGE'], False)
-    next_url = url_for('findjobs', page=all_jobs.next_num) \
-        if all_jobs.has_next else None
-    prev_url = url_for('findjobs', page=all_jobs.prev_num) \
-        if all_jobs.has_prev else None
-    return render_template('findjobs.html',all_jobs=all_jobs.items,next_url=next_url,prev_url=prev_url)
+    form = ListingQueryForm()
+    querystatus = None
+    queried_jobs = None
+    count = 0
+    kw = []
+
+    if form.validate_on_submit() and form.submit.data:
+
+        if form.keyword.data is not '' and len(form.keyword.data) > 1:
+            kw = form.keyword.data.split(',')
+            keywords_entered = []
+            for k in kw:
+                keywords_entered.append(k.lower().strip())
+            all_jobs = JobPost.query.all()
+            keyword_repo = {}
+            for job in all_jobs:
+                keyword_repo[job.id] = job.keywords.split(',')
+            shortlisted_job_ids = {}  #key is id, value is relevance score
+            for k,v in keyword_repo.items():
+                for value in v:
+                    for entered in keywords_entered:
+                        if value == entered:
+                            if k not in shortlisted_job_ids.keys():
+                                shortlisted_job_ids[k] = 1
+                            else:
+                                shortlisted_job_ids[k] += 1
+            queried_jobs_temp = []
+            for id,score in shortlisted_job_ids.items():
+                jobpost = JobPost.query.filter_by(id=id).first()
+                queried_jobs_temp.append([jobpost,score])
+
+            queried_jobs_temp = sorted(queried_jobs_temp,key=takeSecond,reverse=True)
+
+            queried_jobs = []
+            for job in queried_jobs_temp:
+                queried_jobs.append(job[0])
+
+            if len(queried_jobs) == 0:
+                querystatus = 'noresult'
+            else:
+                count = len(queried_jobs)
+                querystatus = 'success'
+
+        else:
+            querystatus = 'length'
+
+    else:
+        kw = []
+        queried_jobs = JobPost.query.all()
+        queried_jobs = queried_jobs[0:5]
+        count = 5
+        querystatus = 'no query'
+
+    return render_template('findjobs.html',queried_jobs=queried_jobs[:5],form=form,querystatus=querystatus, count=count, kw=kw)
+
+
+@app.route('/findjobs/ajax',methods=['POST'])
+@login_required
+def findjobsAJAX():
+    jsonData = request.get_json()
+    # print(jsonData)
+
+    kw = jsonData['keywords']
+    listing_count = jsonData['listingCount']
+
+    if kw == []:
+        data = []
+        following_jobs = JobPost.query.all()
+        following_jobs = following_jobs[listing_count:listing_count+5]
+        # print(following_jobs)
+        for job in following_jobs:
+            data.append([job.id,job.title,job.organization,job.timestamp.strftime('%Y-%m-%d'),job.email])
+        # print(data)
+        return jsonify(success=True, data=data)
+
+    else:
+        # print(kw)
+        data = []
+
+        all_jobs = JobPost.query.all()
+        keyword_repo = {}
+        for job in all_jobs:
+            keyword_repo[job.id] = job.keywords.split(',')
+        shortlisted_job_ids = {}  #key is id, value is relevance score
+        for k,v in keyword_repo.items():
+            for value in v:
+                for entered in kw:
+                    if value == entered:
+                        if k not in shortlisted_job_ids.keys():
+                            shortlisted_job_ids[k] = 1
+                        else:
+                            shortlisted_job_ids[k] += 1
+        following_jobs_temp = []
+        for id,score in shortlisted_job_ids.items():
+            jobpost = JobPost.query.filter_by(id=id).first()
+            following_jobs_temp.append([jobpost,score])
+        following_jobs_temp = following_jobs_temp[listing_count:listing_count+5]
+
+
+        following_jobs_temp = sorted(following_jobs_temp,key=takeSecond,reverse=True)
+        print(following_jobs_temp)
+
+        for job in following_jobs_temp:
+            data.append([job[0].id,job[0].title,job[0].organization,job[0].timestamp.strftime('%Y-%m-%d'),job[0].email])
+
+        # print(data)
+
+        return jsonify(success=True,data=data)
 
 
 
@@ -83,8 +188,6 @@ def applyjob(id):
         job.impressions += str(current_user.id) + ','
         db.session.commit()
     # print(JobPost.query.filter_by(id=id).first().impressions)
-    #biboobobobobobobobobobo
-
 
     applied = False
     if check_appl is not None:
@@ -110,23 +213,59 @@ def myjobs():
     return render_template('myjobs.html', applications=applications, myjoblist=myjoblist)
 
 
+# @app.route('/morejobs',methods=['GET','POST'])
+# @login_required
+# def morejobs():
+#     keywords = User.query.filter_by(id=current_user.id).first().keywords
+#     keyword = keywords[0]
+#     payload = {
+#     'publisher':,
+#     'v':2,
+#     'userip':request.remote_addr,
+#     'useragent':request.headers.get('User-Agent')
+#     'q':
+#     }
+#
+#     return headers
+
+
 
 @app.route('/myprofile/<id>',methods=['GET','POST'])
 @login_required
 def myprofile(id):
     user = User.query.filter_by(id=current_user.id).first_or_404()
     form = EditProfileForm()
+    comment = []
     if form.validate_on_submit() and form.submit.data:
-        user.gender = form.gender.data
-        user.bio = form.bio.data
-        user.phone_no = form.phone_no.data
-        db.session.commit()
-        return render_template('myprofile.html',user=user,form=form)
+        temp = form.keywords.data.split(',')
+
+        if len(temp) <= 10:
+            keywords = []
+
+            for keyword in temp:
+                keywords.append(keyword.lower().strip())
+
+            keywords = ','.join(keywords)
+            print(keywords)
+
+            user.keywords = keywords
+            user.gender = form.gender.data
+            user.bio = form.bio.data
+            user.phone_no = form.phone_no.data
+            db.session.commit()
+            comment.append('Changes saved successfully.')
+            return render_template('myprofile.html',user=user,form=form,comment=comment)
+        else:
+            comment.append('Number of Keywords Exceeded')
+            form.keywords.data = user.keywords
+            return render_template('myprofile.html',user=user,form=form,comment=comment)
+
     elif request.method == 'GET':
         form.gender.data = user.gender
         form.bio.data = user.bio
         form.phone_no.data = user.phone_no
-    return render_template('myprofile.html',user=user,form=form)
+        form.keywords.data = user.keywords
+    return render_template('myprofile.html',user=user,form=form,comment=comment)
 
 
 
@@ -151,13 +290,13 @@ def index_admin():
             listingid_list.append(l.id)
             jobtitle_list.append(l.title)
             listingscount += 1
-            print(l.impressions)
+            # print(l.impressions)
             if l.impressions != '':
                 impressions_list.append(len(l.impressions.split(',')) - 1)
             else:
                 impressions_list.append(0)
 
-        print(impressions_list)
+        # print(impressions_list)
 
         for id in listingid_list:
             count = 0
@@ -227,19 +366,32 @@ def register():
 def mylistings():
     form = JobPostForm()
     all_jobs = JobPost.query.filter_by(email=current_user.email).order_by(JobPost.timestamp.desc())
+    errors = []
     # print(all_jobs)
     if current_user.role != 'admin':
         return 'You are not authorized to access this page.'
     else:
         if form.validate_on_submit():
-            jobpost = JobPost(email = current_user.email, title = form.title.data, organization = form.organization.data, description = form.description.data, pay = form.pay.data, pay_frequency = form.pay_frequency.data, impressions = '')
-            # start_date = form.start_date.data, end_date = form.end_date.data)
-            db.session.add(jobpost)
-            db.session.commit()
-            # return render_template('mylistings.html', form=form, all_jobs=all_jobs)
-            return redirect(url_for('mylistings'))
+            temp = form.keywords.data
+            temp = temp.split(',')
+            keywords = []
+            for t in temp:
+                keywords.append(t.strip().lower())
+
+
+            if len(keywords) <= 10:
+                keywords = str(','.join(keywords))
+                jobpost = JobPost(email = current_user.email, title = form.title.data, organization = form.organization.data, description = form.description.data, pay = form.pay.data, pay_frequency = form.pay_frequency.data, keywords=keywords, impressions = '')
+                # start_date = form.start_date.data, end_date = form.end_date.data)
+                db.session.add(jobpost)
+                db.session.commit()
+                # return render_template('mylistings.html', form=form, all_jobs=all_jobs)
+                return redirect(url_for('mylistings'))
+            else:
+                errors.append('Keyword Length Exceeded')
+                return render_template('mylistings.html', form=form, all_jobs=all_jobs,errors=errors)
         else:
-            return render_template('mylistings.html', form=form, all_jobs=all_jobs)
+            return render_template('mylistings.html', form=form, all_jobs=all_jobs,errors=errors)
 
 
 @app.route('/editlisting/<id>',methods=['GET','POST'])
@@ -249,15 +401,34 @@ def editlisting(id):
     form2 = DeleteListingBtn(prefix="form2")
     post = JobPost.query.filter_by(id=id).first_or_404()
     changed = False
+    errors = []
     if form.validate_on_submit() and form.submit.data:
-        post.title = form.title.data
-        post.organization = form.organization.data
-        post.description = form.description.data
-        post.pay = form.pay.data
-        post.pay_frequency = form.pay_frequency.data
-        db.session.commit()
-        changed = True
-        return render_template('editlisting.html', post=post, form=form, form2=form2, changed=changed)
+
+        old_keywords = post.keywords
+        temp = form.keywords.data
+        temp = temp.split(',')
+        keywords = []
+        for t in temp:
+            keywords.append(t.strip().lower())
+
+
+        if len(keywords) <= 10:
+            keywords = str(','.join(keywords))
+            post.title = form.title.data
+            post.organization = form.organization.data
+            post.description = form.description.data
+            post.pay = form.pay.data
+            post.pay_frequency = form.pay_frequency.data
+            post.keywords = keywords
+            db.session.commit()
+            changed = True
+            return render_template('editlisting.html', post=post, form=form, form2=form2, changed=changed, errors=errors)
+
+        else:
+            errors.append('Keyword Count Exceeded')
+            form.keywords.data = old_keywords
+            return render_template('editlisting.html', post=post, form=form, form2=form2, changed=changed, errors=errors)
+
     elif form2.validate_on_submit() and form2.submit.data:
         application_delete = Application.query.filter_by(jobpost_id=post.id)
         # print(application_delete)
@@ -273,7 +444,9 @@ def editlisting(id):
         form.description.data = post.description
         form.pay.data = post.pay
         form.pay_frequency.data = post.pay_frequency
-    return render_template('editlisting.html', post=post, form=form, form2=form2, changed=changed)
+        print(post.keywords)
+        form.keywords.data = post.keywords
+    return render_template('editlisting.html', post=post, form=form, form2=form2, changed=changed, errors=errors)
 
 @app.route('/viewapplicants/<id>',methods=['GET','POST'])
 @login_required

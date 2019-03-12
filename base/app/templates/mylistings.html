@@ -83,11 +83,13 @@
         <br>
 
 
-        {% for error in form.pay.errors %}
+        {% for error in errors %}
         <div class="alert alert-secondary animated fadeIn" role="alert" style="text-align:center;">
           <h5>{{ error }}</h5>
           </div>
           {% endfor %}
+
+
 
 
     <button type="button" class="btn btn-light btn-lg btn-block" data-toggle="modal" data-target="#myModal" data-backdrop="static" data-keyboard="false">Create a New Listing...</button>
@@ -150,7 +152,7 @@
           <div class="form-group">
             <label for="message-text" class="col-form-label">Job Description</label>
             <!-- <textarea class="form-control" id="message-text" size=80></textarea> -->
-            {{ form.description(size=80, class_="form-control", placeholder="Job Description", rows="10") }}
+            {{ form.description(size=80, class_="form-control", placeholder="Job Description", rows="5") }}
           </div>
 
           <div class="form-group">
@@ -161,6 +163,8 @@
             {{ form.pay(size=20, class_="form-control", placeholder="Enter a number") }}
           </div>
 
+
+
           <div class="col-sm-6" style="padding-top:5px">
             <label for="inputState">Frequency</label>
             {{ form.pay_frequency(class_="form-control")}}
@@ -168,6 +172,14 @@
           </div>
         </div>
       </div>
+
+
+      <div class="form-group">
+        <label for="message-text" class="col-form-label">Keywords</label>
+        <!-- <textarea class="form-control" id="message-text" size=80></textarea> -->
+        {{ form.keywords(size=80, id="keywords", class_="form-control", placeholder="Enter 10 Keywords (Separated by Comma)", rows="5") }}
+      </div>
+      <div id='result'></div>
 
       <!-- <div class="form-group">
         <label for="message-text" class="col-form-label">5 Related Keywords (Separate with comma)</label>
@@ -217,8 +229,9 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
         <!-- <button type="button" class="btn btn-primary bg-info">Create Listing</button> -->
-        {{ form.submit(class_='btn btn-info') }}
+        {{ form.submit(id="submit", class_='btn btn-info') }}
       </div>
+      <div id='prevent'></div>
 
       </form>
     </div>
@@ -229,8 +242,34 @@
 <!-- END MODAL --><!-- END MODAL --><!-- END MODAL --><!-- END MODAL --><!-- END MODAL --><!-- END MODAL --><!-- END MODAL -->
 
     <script>
+    function wordsToList(str) {
+      var splitted = str.split(',');
+      return splitted;
+    }
 
-</script>
+    var keywordarea = document.getElementById("keywords");
+    var result   = document.getElementById("result");
+    var submit = document.getElementById("submit");
+
+    keywordarea.addEventListener("input", function(){
+    var v = wordsToList( this.value );
+    if ( v == '' ) {
+      result.innerHTML = (
+        "0 Keywords Entered"
+      );
+    } else if ( v.length < 11 ) {
+      result.innerHTML = (
+        v.length + " Keywords Entered"
+      );
+    }
+     else {
+      result.innerHTML = (
+        "<p class='text-danger'>Keyword Count Exceeded</p>"
+      );
+    }
+
+  }, false);
+    </script>
 
   </body>
 

@@ -11,7 +11,6 @@ class User(UserMixin, db.Model):
 
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
-    # username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
     role = db.Column(db.String(64)) # admin and regular
@@ -19,6 +18,7 @@ class User(UserMixin, db.Model):
     bio = db.Column(db.String(1000),nullable=True)
     phone_no = db.Column(db.Integer,nullable=True)
     stars = db.Column(db.Integer)
+    keywords = db.Column(db.Text(), nullable=True, default='')
 
 
     def __repr__(self):
@@ -42,6 +42,7 @@ class JobPost(db.Model):
     pay = db.Column(db.FLOAT(precision=10, scale=2))
     pay_frequency = db.Column(db.String(32))
     impressions = db.Column(db.Text(), default='')
+    keywords = db.Column(db.Text(), nullable=True)
     # start_date = db.Column(db.Date,nullable=True)
     # end_date = db.Column(db.Date,nullable=True)
 
