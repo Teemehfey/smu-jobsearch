@@ -67,41 +67,41 @@
       <h1 style="text-align:center">Featured Jobs</h1>
         <br>
 
+      <!-- for loop -->
+      {% for item in z %}
+      <div class="card-deck">
+        <div class="card animate animated fadeInLeft">
 
+          <div class="card-body">
+            <h5 class="card-title">TITLE: {{ current_user.email }}</h5>
+            <p class="card-text">Either job description here, pay, or event date details.</p>
+            <br>
 
-<!-- for loop -->
-{% for item in z %}
-<div class="card-deck">
-  <div class="card">
-    <img class="card-img-top" src="{{url_for('static',filename='img/login-bg.gif')}}" alt="Card image cap">
-    <div class="card-body">
-      <h5 class="card-title">{{ current_user.email }}</h5>
-      <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-      <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
-    </div>
-  </div>
-  <div class="card">
-    <img class="card-img-top" src="{{url_for('static',filename='img/login-bg.gif')}}" alt="Card image cap">
-    <div class="card-body">
-      <h5 class="card-title">Suuuppppeeeerrrr lonnngggggggg asssssss titleeeeeee</h5>
-      <p class="card-text">This card has supporting text below as a natural lead-in to additional content.</p>
-      <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
-    </div>
-  </div>
-  <div class="card">
-    <img class="card-img-top" src="{{url_for('static',filename='img/login-bg.gif')}}" alt="Card image cap">
-    <div class="card-body">
-      <h5 class="card-title text-truncate">Card title</h5>
-      <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This card has even longer content than the first to show that equal height action.</p>
-      <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
-    </div>
-  </div>
-</div>
-<br><br>
-{% endfor %}
+            <a data-toggle="collapse" href="#{{item}}" aria-expanded="true" aria-controls="{{item}}">
+                <button type="button" class="btn btn-primary">More Info</button>
+            </a>
+
+            
+          </div>
+
+          <div id = "{{item}}" class = "collapse">
+              <div class = "card-body">
+                  <p class = "card-text"> More info here! More job details </p>
+              </div>
+          </div>
+
+          <div class="card-footer text-muted">
+            <p class = "card-text">Posted: 25/12/2018                 Last updated: 2 days ago</p>
+          </div>
+
+        </div>
+      </div>
+      <br><br>
+      {% endfor %}
 
         <br><br>
     </div>
+
     <!-- /.container -->
 
     <!-- Bootstrap core JavaScript -->

@@ -18,6 +18,7 @@ class User(UserMixin, db.Model):
     bio = db.Column(db.String(1000),nullable=True)
     phone_no = db.Column(db.Integer,nullable=True)
     stars = db.Column(db.Integer)
+    resume_loc = db.Column(db.String(1000),default='')
     keywords = db.Column(db.Text(), nullable=True, default='')
 
 
@@ -56,6 +57,7 @@ class Application(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     status = db.Column(db.String(32))
+    reject_reason = db.Column(db.String(32), default='')
 
     def __repr__(self):
         return '<Application {}>'.format(self.id)

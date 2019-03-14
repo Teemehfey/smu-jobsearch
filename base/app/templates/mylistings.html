@@ -21,6 +21,7 @@
 
     <!-- Bootstrap core JavaScript -->
     <script src="{{url_for('static',filename='vendor/jquery/jquery.min.js')}}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
     <script src="{{url_for('static',filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
 
@@ -99,13 +100,20 @@
         {% for job in all_jobs %}
           <div class="card animated fadeInUp">
             <div class="card-body">
-              <h5 class="card-title">{{ job.title }}</h5>
-              <h6 class="card-title">{{ job.organization }}</h6>
+              <h5 class="card-title">{{ job[0].title }}</h5>
+              <h6 class="card-title">{{ job[0].organization }}</h6>
               <!-- <p class="card-text">{{ job.description }}</p> -->
-              <p class="card-text"><b>${{ job.pay }}, {{ job.pay_frequency }}</b></p>
-              <p class="card-text"><small class="text-muted">Posted on {{ job.timestamp.strftime('%Y-%m-%d') }}</small></p>
-              <a href="{{ url_for('editlisting', id=job.id) }}"><button type="button" class="btn btn-info">Edit Listing</button></a>
-              <a href="{{ url_for('viewapplicants', id=job.id) }}"><button type="button" class="btn btn-success">View Applicants</button></a>
+              <p class="card-text"><b>${{ job[0].pay }}, {{ job[0].pay_frequency }}</b></p>
+              <p class="card-text"><small class="text-muted">Posted on {{ job[0].timestamp.strftime('%Y-%m-%d') }}</small></p>
+              <a href="{{ url_for('editlisting', id=job[0].id) }}"><button type="button" class="btn btn-info">Edit Listing</button></a>
+              <a href="{{ url_for('viewapplicants', id=job[0].id) }}">
+                <button type="button" class="btn btn-success" data-toggle="tooltip" data-placement="right" title="{{ job[1][1] }} Unread, {{ job[1][2] }} Pending">View Applicants
+                  <span class="badge badge-light"> {{ job[1][0] }} </span>
+                </button>
+              </a>
+
+
+
             </div>
           </div>
           <br>
@@ -242,6 +250,11 @@
 <!-- END MODAL --><!-- END MODAL --><!-- END MODAL --><!-- END MODAL --><!-- END MODAL --><!-- END MODAL --><!-- END MODAL -->
 
     <script>
+
+    $(document).ready(function() {
+      $("body").tooltip({ selector: '[data-toggle=tooltip]' });
+  });
+
     function wordsToList(str) {
       var splitted = str.split(',');
       return splitted;

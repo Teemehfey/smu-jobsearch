@@ -17,6 +17,12 @@
     <link href="{{url_for('static',filename='css/styles.css')}}" rel="stylesheet">
     <link href="{{url_for('static',filename='css/animate.css')}}" rel="stylesheet">
 
+    <!-- JS -->
+    <script src="{{url_for('static',filename='vendor/jquery/jquery.min.js')}}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+    <script src="{{url_for('static',filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
+
+
   </head>
 
   <body class="index-reg-bg">
@@ -82,7 +88,7 @@
               {% elif j[0].status == 'pending' %}
               <span class="badge badge-pill badge-warning">Pending</span>
               {% elif j[0].status == 'rejected' %}
-              <span class="badge badge-pill badge-danger">Rejected</span>
+            <span class="badge badge-pill badge-danger">Rejected - {{ j[0].reject_reason }}</span>
               {% elif j[0].status == 'accepted' %}
               <span class="badge badge-pill badge-success">Accepted</span>
             {% endif %}
@@ -113,8 +119,13 @@
 
 
     <!-- Bootstrap core JavaScript -->
-    <script src="{{url_for('static',filename='vendor/jquery/jquery.min.js')}}"></script>
-    <script src="{{url_for('static',filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
+
+    <script>
+    $(document).ready(function() {
+      $("body").tooltip({ selector: '[data-toggle=tooltip]' });
+  });
+  </script>
+
 
   </body>
 

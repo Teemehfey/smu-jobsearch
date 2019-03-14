@@ -1,5 +1,5 @@
-import json, requests
-from flask import render_template, flash, redirect, url_for, request, jsonify
+import json, requests, socket, os
+from flask import render_template, flash, redirect, url_for, request, jsonify, send_from_directory
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, JobPostForm, EditListingForm, DeleteListingBtn, ApplyJobBtn, EditProfileForm, AcceptApplicationBtn, RejectApplicationBtn, ListingQueryForm
 from flask_login import current_user, login_user, logout_user,login_required
@@ -7,7 +7,10 @@ from app.models import User, JobPost, Application
 from werkzeug.urls import url_parse
 from wtforms.validators import ValidationError
 from sqlalchemy import func, or_
-import socket
+from werkzeug import secure_filename
+from flask_wtf.file import FileField
+from werkzeug.utils import secure_filename
+
 
 @app.route('/weisheng',methods=['GET','POST'])
 def weisheng():
@@ -29,7 +32,7 @@ def weisheng():
 
     return render_template('login2.html', title='Sign In', form=form)
 
-@app.route('/weisheng2', methods=['POST'])
+@app.route('/weisheng2', methods=['GET','POST'])
 def weisheng2():
     not_smu_email = False
     if current_user.is_authenticated:
@@ -53,10 +56,11 @@ def weisheng2():
 @app.route('/index_reg')
 @login_required
 def index_reg():
-    y = 7
-    x = 'hello goy'
-    z = [1,2,3,4,5,6]
-    return render_template('index_reg.html', y=y, x=x, z=z)
+    z = []
+    for i in range(10):
+        z.append(i)
+
+    return render_template('index_reg.html',z=z)
 
 
 def takeSecond(elem):
@@ -125,8 +129,6 @@ def findjobs():
 @login_required
 def findjobsAJAX():
     jsonData = request.get_json()
-    # print(jsonData)
-
     kw = jsonData['keywords']
     listing_count = jsonData['listingCount']
 
@@ -134,14 +136,11 @@ def findjobsAJAX():
         data = []
         following_jobs = JobPost.query.all()
         following_jobs = following_jobs[listing_count:listing_count+5]
-        # print(following_jobs)
         for job in following_jobs:
             data.append([job.id,job.title,job.organization,job.timestamp.strftime('%Y-%m-%d'),job.email])
-        # print(data)
         return jsonify(success=True, data=data)
 
     else:
-        # print(kw)
         data = []
 
         all_jobs = JobPost.query.all()
@@ -165,12 +164,8 @@ def findjobsAJAX():
 
 
         following_jobs_temp = sorted(following_jobs_temp,key=takeSecond,reverse=True)
-        print(following_jobs_temp)
-
         for job in following_jobs_temp:
             data.append([job[0].id,job[0].title,job[0].organization,job[0].timestamp.strftime('%Y-%m-%d'),job[0].email])
-
-        # print(data)
 
         return jsonify(success=True,data=data)
 
@@ -183,11 +178,10 @@ def applyjob(id):
     job = JobPost.query.filter_by(id=id).first_or_404()
     check_appl = Application.query.filter_by(jobpost_id=job.id, user_id=current_user.id).first()
     impressions = job.impressions.split(',')
-    # print(impressions)
+
     if str(current_user.id) not in impressions:
         job.impressions += str(current_user.id) + ','
         db.session.commit()
-    # print(JobPost.query.filter_by(id=id).first().impressions)
 
     applied = False
     if check_appl is not None:
@@ -195,7 +189,7 @@ def applyjob(id):
 
     if form.validate_on_submit():
         if check_appl is None:
-            new_application = Application(jobpost_id=job.id, user_id=current_user.id, status='unread')
+            new_application = Application(jobpost_id=job.id, user_id=current_user.id, status='unread',reject_reason='')
             db.session.add(new_application)
             db.session.commit()
             return redirect(url_for('myjobs'))
@@ -213,30 +207,17 @@ def myjobs():
     return render_template('myjobs.html', applications=applications, myjoblist=myjoblist)
 
 
-# @app.route('/morejobs',methods=['GET','POST'])
-# @login_required
-# def morejobs():
-#     keywords = User.query.filter_by(id=current_user.id).first().keywords
-#     keyword = keywords[0]
-#     payload = {
-#     'publisher':,
-#     'v':2,
-#     'userip':request.remote_addr,
-#     'useragent':request.headers.get('User-Agent')
-#     'q':
-#     }
-#
-#     return headers
-
-
-
 @app.route('/myprofile/<id>',methods=['GET','POST'])
 @login_required
 def myprofile(id):
     user = User.query.filter_by(id=current_user.id).first_or_404()
     form = EditProfileForm()
     comment = []
+    if user.resume_loc != '' or user.resume_loc is not None:
+        filename = user.resume_loc.split('/')[-1]
+
     if form.validate_on_submit() and form.submit.data:
+        # print(form.resume.data)
         temp = form.keywords.data.split(',')
 
         if len(temp) <= 10:
@@ -252,20 +233,35 @@ def myprofile(id):
             user.gender = form.gender.data
             user.bio = form.bio.data
             user.phone_no = form.phone_no.data
+
+            if form.resume.data is not None:
+
+                if user.resume_loc != '' or user.resume_loc is not None:
+                    existing = user.resume_loc
+                    if os.path.exists(existing):
+                        print('found existing resume, deleting existing')
+                        os.remove(existing)
+
+                resume = form.resume.data
+                resume.save('/opt/base/base/app/userfiles/resumes/'+resume.filename)
+                user.resume_loc = '/opt/base/base/app/userfiles/resumes/'+resume.filename
+
             db.session.commit()
             comment.append('Changes saved successfully.')
-            return render_template('myprofile.html',user=user,form=form,comment=comment)
+            filename = user.resume_loc.split('/')[-1]
+            return render_template('myprofile.html',user=user,form=form,comment=comment,filename=filename)
         else:
             comment.append('Number of Keywords Exceeded')
             form.keywords.data = user.keywords
-            return render_template('myprofile.html',user=user,form=form,comment=comment)
+            return render_template('myprofile.html',user=user,form=form,comment=comment,filename=filename)
 
     elif request.method == 'GET':
         form.gender.data = user.gender
         form.bio.data = user.bio
         form.phone_no.data = user.phone_no
         form.keywords.data = user.keywords
-    return render_template('myprofile.html',user=user,form=form,comment=comment)
+
+    return render_template('myprofile.html',user=user,form=form,comment=comment,filename=filename)
 
 
 
@@ -290,13 +286,11 @@ def index_admin():
             listingid_list.append(l.id)
             jobtitle_list.append(l.title)
             listingscount += 1
-            # print(l.impressions)
             if l.impressions != '':
                 impressions_list.append(len(l.impressions.split(',')) - 1)
             else:
                 impressions_list.append(0)
 
-        # print(impressions_list)
 
         for id in listingid_list:
             count = 0
@@ -323,7 +317,6 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user is None or not user.check_password(form.password.data):
-            # flash('Invalid username or password')
             messages = True
             return render_template('login.html', title='Sign In', form=form, messages=messages)
         login_user(user)
@@ -350,7 +343,7 @@ def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         if 'smu.edu.sg' in form.email.data:
-            user = User(email=form.email.data, role='regular', stars=5, gender='')
+            user = User(email=form.email.data, role='regular', stars=5, gender='',keywords='',resume_loc='')
             user.set_password(form.password.data)
             db.session.add(user)
             db.session.commit()
@@ -365,12 +358,32 @@ def register():
 @login_required
 def mylistings():
     form = JobPostForm()
-    all_jobs = JobPost.query.filter_by(email=current_user.email).order_by(JobPost.timestamp.desc())
+    all_jobs = []
     errors = []
-    # print(all_jobs)
+
     if current_user.role != 'admin':
         return 'You are not authorized to access this page.'
+
     else:
+
+        temp_jobs = JobPost.query.filter_by(email=current_user.email).order_by(JobPost.timestamp.desc())
+
+        for job in temp_jobs:
+            applications = Application.query.filter_by(jobpost_id=job.id)
+            total_count = 0
+            unread_count = 0
+            pending_count = 0
+            for application in applications:
+                total_count += 1
+                if application.status == 'unread':
+                    unread_count += 1
+                elif application.status == 'pending':
+                    pending_count += 1
+
+            count_list = [total_count,unread_count,pending_count]
+
+            all_jobs.append([job,count_list])
+
         if form.validate_on_submit():
             temp = form.keywords.data
             temp = temp.split(',')
@@ -382,10 +395,8 @@ def mylistings():
             if len(keywords) <= 10:
                 keywords = str(','.join(keywords))
                 jobpost = JobPost(email = current_user.email, title = form.title.data, organization = form.organization.data, description = form.description.data, pay = form.pay.data, pay_frequency = form.pay_frequency.data, keywords=keywords, impressions = '')
-                # start_date = form.start_date.data, end_date = form.end_date.data)
                 db.session.add(jobpost)
                 db.session.commit()
-                # return render_template('mylistings.html', form=form, all_jobs=all_jobs)
                 return redirect(url_for('mylistings'))
             else:
                 errors.append('Keyword Length Exceeded')
@@ -464,9 +475,13 @@ def viewapplicants(id):
 def applicantinfo(id,user_id):
     form1 = AcceptApplicationBtn(prefix="form1")
     form2 = RejectApplicationBtn(prefix="form2")
+
     post = JobPost.query.filter_by(id=id).first_or_404()
     application = Application.query.filter_by(jobpost_id=post.id,user_id=user_id).first_or_404()
     user = User.query.filter_by(id=user_id).first_or_404()
+
+    resume_name = user.resume_loc.split('/')[-1]
+
     if application.status == 'unread':
         application.status = 'pending'
         db.session.commit()
@@ -474,8 +489,18 @@ def applicantinfo(id,user_id):
         application.status = 'accepted'
         db.session.commit()
         return redirect(url_for('viewapplicants',id=post.id))
+
     elif form2.validate_on_submit() and form2.submit.data:
         application.status = 'rejected'
+        application.reject_reason = form2.reject_choice.data
         db.session.commit()
+
         return redirect(url_for('viewapplicants',id=post.id))
-    return render_template('applicantinfo.html', post=post, application=application, user=user, form1=form1, form2=form2)
+    return render_template('applicantinfo.html', post=post, application=application, user=user, form1=form1, form2=form2, resume_name=resume_name)
+
+
+@app.route('/download_resume/<path:filename>', methods=['GET', 'POST'])
+def download(filename):
+    uploads = os.path.join(app.root_path, 'userfiles/resumes')
+    # print(uploads)
+    return send_from_directory(directory=uploads, filename=filename)

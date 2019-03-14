@@ -60,8 +60,16 @@
 
     <!-- Page Content -->
     <br><br><br><br>
+    {% for c in comment %}
+
+    <div class="alert alert-secondary animated fadeIn" role="alert" style="text-align:center;">
+      <h5 style='margin-top:9px'>{{ c }}</h5>
+      </div>
+      {% endfor %}
+
     <div class="container d-flex justify-content-center">
       <br><br><br><br><br>
+
 
       <div class="card animated fadeInLeft w-75">
 
@@ -69,14 +77,9 @@
             <h1 style="text-align:center;margin-top:25px;">My Profile</h1>
           </div>
 
-          {% for c in comment %}
-          <div class="alert alert-secondary animated fadeIn" role="alert" style="text-align:center;">
-            <h5 style='margin-top:9px'>{{ c }}</h5>
-            </div>
-            {% endfor %}
 
           <div class="card-body">
-            <form method="post">
+            <form method="post" enctype="multipart/form-data">
               {{ form.hidden_tag() }}
             <img src="{{ url_for('static', filename='img/placeholder.jpg')}}" class="img-responsive mx-auto d-block rounded-circle" width="150px" height="150px">
             <br>
@@ -87,7 +90,6 @@
               <p style="font-size:30px;margin-bottom:30px;">
             {% for i in range(user.stars) %}
               &#9733;
-              <!-- <img src="{{ url_for('static', filename='img/star.png')}}" width="15" height="auto"> -->
             {% endfor %}
           </p>
             <hr>
@@ -123,6 +125,20 @@
                 <h5 style="text-align:center">Bio</h5>
                 <!-- <textarea class="form-control" id="message-text" size=80></textarea> -->
                 {{ form.bio(size="70", class_="form-control", placeholder="Garner sympathy by writing about how poor you are...", rows="7") }}
+              </div>
+
+              <br><hr>
+
+              <div class="form-group" style='text-align:center'>
+                <br>
+                <h5 style="text-align:center">Upload Resume (PDF or Word only)</h5>
+                <!-- <textarea class="form-control" id="message-text" size=80></textarea> -->
+                {% if filename != '' %}
+                {{ filename }}
+                {% else %}
+                You haven't uploaded any resume yet.
+                {% endif %}
+                {{ form.resume(class_="form-control,hidden") }}
               </div>
 
               <br><hr>

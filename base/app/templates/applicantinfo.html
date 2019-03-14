@@ -100,20 +100,17 @@
                   <p style="text-align:center">Phone No: {{ user.phone_no }}
 
                 <p style="text-align:center">Rating:
-
                 {% for i in range(user.stars) %}
                   &#9733;
-
                 {% endfor %}
                 </p>
 
-
+                <p style="text-align:center"><a href="/download_resume/{{ resume_name }}" download>Download Resume</a></p>
                 <hr>
                 <!-- <br> -->
                 <p style="text-align:center">{{ user.bio }}</p>
 
                 <hr>
-                <br>
 
                   <p class="card-text"><b></b></p>
                   <p class="card-text"><small class="text-muted"></small></p>
@@ -179,18 +176,25 @@
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">oi</h5>
+        <h5 class="modal-title" id="exampleModalLongTitle">Confirmation</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-       Reject Applicant?
+        <form method="post">
+            {{ form2.hidden_tag() }}
+       Do you want to reject this applicant?
+       <br><br>
+       <i>Give a reason...</i>
+       <br><br>
+       {{ form2.reject_choice(class_='form-control') }}
+
+
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
-        <form method="post">
-          {{ form2.hidden_tag() }}
+
         {{ form2.submit(class_='btn btn-danger') }}
 
         </form>

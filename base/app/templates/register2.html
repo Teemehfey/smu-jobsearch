@@ -51,56 +51,53 @@ function MM_validateForm() { //v4.0
           <img src="{{url_for('static',filename='img/$MU_blk.png')}}" width="auto" height="74" alt="" style="padding-left:10px;">
           <br><p><i>Curated for poor college students.</i></p>
           <br>
-          <form method="post" action="">
-            {{ form.hidden_tag() }}
-    <p></p>
+        <form action="" method="post">
+          {{ form.hidden_tag() }}
 
+            <h5><b>Register</b></h5>
 
-    <table width="50%" border="0" align="center" cellspacing="0" class="LABEL">
-      <h5><b>Register</b></h5>
-
-      <br>
-<tr>
-  <div class="form-group">
+            <br>
+            <div class="form-group">
       <span id="spry_email">
     <label for="exampleInputEmail1">Email</label> <br>
     {{ form.email(size=32,class_ ='form-control ',placeholder="Email",required='required') }}
     {% for error in form.email.errors %}
     <span style="color: red;">[{{ error }}]</span>
     {% endfor %}
-  <span class="textfieldInvalidFormatMsg" >Please type a valid email address.</span>
+  <p class="textfieldInvalidFormatMsg">Please type a valid SMU email address.</p>
     {% if not_smu_email == True %}
     <span style="color: red;">[Please enter an SMU Email.]</span>
     {% endif %}
-</span>
-</tr>
-<div class="form-group">
-  <label for="exampleInputPassword1">Password</label> <br>
+            </div>
+
+            <div class="form-group">
+              <label for="exampleInputPassword1">Password</label>
+
+              {{ form.password(size=32,class_ ='form-control',placeholder="Password",required='required') }}<br>
+            {% for error in form.password.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+            </div>
 
 
-                {{ form.password(size=32,class_ ='form-control',placeholder="Password",required='required') }}
-              {% for error in form.password.errors %}
-              <span style="color: red;">[{{ error }}]</span>
-              {% endfor %}
+            <div class="form-group">
+              <label for="exampleInputPassword1">Confirm Password</label>
 
-</div>
-<div class="form-group">
-  <label for="exampleInputPassword2">Confirm Password</label> <br>
-  {{ form.password2(size=32,class_ ='form-control',placeholder="Confirm Password",required='required') }} <br>
-{% for error in form.password2.errors %}
-<span style="color: red;">[{{ error }}]</span>
-{% endfor %}
-</div>
+              {{ form.password2(size=32,class_ ='form-control',placeholder="Confirm Password",required='required') }}<br>
+            {% for error in form.password2.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+            </div>
 
 
-      <tr>
-        <td>&nbsp;</td>
-        <td><input name="submit" type="submit" class="btn btn-primary" id="submit" onClick="MM_validateForm('Email','','RisEmail','Password','','R','ConfirmPassword','','R');return document.MM_returnValue" value="Register">      </td>
-      </tr>
-    </table> <br>
-    <a href="/login">Existing User?</a>
-    </form>
 
+
+            <br>
+
+            {{ form.submit(class_='btn btn-primary') }}
+            <br><br>
+            <a href="/login">Existing User?</a>
+      </form>
       </div>
     </div>
   </div>
@@ -112,8 +109,6 @@ function MM_validateForm() { //v4.0
     <script src="{{url_for('static',filename='vendor/jquery/jquery.min.js')}}"></script>
     <script src="{{url_for('static',filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
     <script type="text/javascript">
-var sprytextfield1 = new Spry.Widget.ValidationTextField("spry_nric", "social_security_number", {validateOn:["blur"], format:"ssn_custom", pattern:"A0000000A", useCharacterMasking:true});
-var sprytextfield2 = new Spry.Widget.ValidationTextField("spry_hp", "phone_number", {validateOn:["blur"], format:"phone_custom", pattern:"00000000", useCharacterMasking:true});
 var sprytextfield3 = new Spry.Widget.ValidationTextField("spry_email", "email", {validateOn:["blur"]});
 </script>
     <script>

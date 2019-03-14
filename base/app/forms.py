@@ -3,6 +3,8 @@ from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextF
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
 from wtforms.widgets import TextArea
 from app.models import User, JobPost, Application
+from flask_uploads import UploadSet, IMAGES
+from flask_wtf.file import FileField, FileAllowed, FileRequired
 
 class LoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
@@ -24,24 +26,20 @@ class RegistrationForm(FlaskForm):
             raise ValidationError('Please use a different email address.')
 
 FREQ_TABLE = ('Per Hour','Per Day','Total')
-REJECT_TABLE = ('All Positions Filled', 'Skills Mismatch', 'Others')
+
 
 class JobPostForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
     organization = StringField('Organization', validators=[DataRequired()])
-    # description = StringField('Job Description', validators=[DataRequired()])
     description = StringField(u'Text', widget=TextArea(),validators=[DataRequired()])
     pay = FloatField('Pay', validators=[DataRequired()])
     pay_frequency = SelectField('Frequency', choices=[(option,option) for option in FREQ_TABLE])
     keywords = StringField(u'Text', widget=TextArea())
-    # start_date = DateField('Date Start',format='%M/%D/%Y')
-    # end_date = DateField('Date End',format='%M/%D/%Y')
     submit = SubmitField('Create Listing')
 
 class EditListingForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
     organization = StringField('Organization', validators=[DataRequired()])
-    # description = StringField('Job Description', validators=[DataRequired()])
     description = StringField(u'Text', widget=TextArea(),validators=[DataRequired()])
     pay = FloatField('Pay', validators=[DataRequired()])
     pay_frequency = SelectField('Frequency', choices=[(option,option) for option in FREQ_TABLE])
@@ -63,14 +61,21 @@ class EditProfileForm(FlaskForm):
     gender = SelectField('Gender', choices=[(option,option) for option in SEX_TABLE])
     bio = StringField(u'Text', widget=TextArea())
     phone_no = IntegerField('Phone Number')
+    resume = FileField('Resume', validators=[
+        FileAllowed(['docx', 'doc', 'pdf'], 'PDFs (.pdf) and non-macro Word Documents (.doc/.docx) only!')
+    ])
     keywords = StringField(u'Text', widget=TextArea())
     submit = SubmitField('Save Profile')
 
 class AcceptApplicationBtn(FlaskForm):
     submit = SubmitField('Accept')
 
+
+REJECT_TABLE = ('All Positions Filled', 'Skills Mismatch', 'Underqualified')
+
+
 class RejectApplicationBtn(FlaskForm):
-   reject_choice = SelectField('Because', choices=[(option, option) for option in REJECT_TABLE])
+   reject_choice = SelectField('Reject Choice', choices=[(option, option) for option in REJECT_TABLE])
    submit = SubmitField('Reject')
 
 class ListingQueryForm(FlaskForm):
