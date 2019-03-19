@@ -56,10 +56,6 @@
               <a class="nav-link" href="{{ url_for('index_admin') }}">Dashboard</a>
             </li>
 
-            <!-- <li class="nav-item">
-              <a class="nav-link" href="" data-toggle="modal" data-target="#myModal" data-backdrop="static" data-keyboard="false">New Listing</a>
-            </li> -->
-
             <li class="nav-item active">
               <a class="nav-link" href="{{ url_for('mylistings')}}">My Listings
             </a>
@@ -76,54 +72,42 @@
     </nav>
 
     <!-- Page Content -->
-    <div class="container">
+    <br><br><br><br><br>
+    <div class="container d-flex justify-content-center">
       <br><br><br><br><br>
-      <h6 style="text-align:center">Applicants for</h6>
-      <h1 style="text-align:center">{{ post.title }}</h1>
-      <h5 style="text-align:center">{{ post.organization }}</h5>
+      <h2 style="text-align:center"></h2>
         <br>
 
+            <div class="card animated fadeInLeft w-50">
 
-          <div class="card-column">
-        {% for a in viewapplicants_list %}
-          <div class="card animated fadeInUp">
-            <div class="card-body">
+                <div class="card-header">
+                  <h1 style="text-align:center;margin-top:30px;">Give Feedback</h1>
 
-              <h5 class="card-title">{{ a[1].email }}</h5>
-              {% if a[0].status == 'unread' %}
-                <span class="badge badge-pill badge-secondary" style="margin-bottom:18px">Not Read</span>
-                {% elif a[0].status == 'pending' %}
-                <span class="badge badge-pill badge-warning" style="margin-bottom:18px">Pending</span>
-                {% elif a[0].status == 'rejected' %}
-                <span class="badge badge-pill badge-danger" style="margin-bottom:18px">Rejected</span>
-                {% elif a[0].status == 'accepted' %}
-                <span class="badge badge-pill badge-success" style="margin-bottom:18px">Accepted</span>
-              {% endif %}
+                </div>
 
-              <p class="card-text"><small class="text-muted">Applied on {{ a[0].timestamp.strftime('%Y-%m-%d') }}</small></p>
-              <a href='{{ url_for('applicantinfo', id=post.id, user_id=a[1].id) }}'><button type="button" class="btn btn-info">View Profile</button></a>
+                <div class="card-body">
+                  <h5>Some compliments and/or constructive criticisms please</h5>
+                  <br><br>
+                    <form method="post">
+                      {{ form.hidden_tag() }}
 
-              {% if a[0].status == 'accepted' %}
-              <a href='{{ url_for('givefeedback', id=post.id, user_id=a[1].id) }}'><button type="button" class="btn btn-secondary">Job Done? Give some feedback...</button></a>
-              {% endif %}
+                      {{ form.feedback(class_="form-control") }}
+
+                      <br><br>
+
+                        {{ form.submit(class_='btn btn-lg btn-block btn-dark') }}
 
 
+
+
+
+
+                    </form>
+                </div>
+
+              </div>
             </div>
-          </div>
-          <br>
-        {% endfor %}
-      </div>
-
-
-
-
-
-
-
-
-
-    </div>
-    <input type="hidden" id="refreshed" value="no">
+      <br><br>
 
   </body>
 

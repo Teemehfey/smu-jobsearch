@@ -65,47 +65,11 @@
 
 
 
-        <h1 style="text-align:center">My Jobs</h1>
+        <h1 style="text-align:center">My Feedback</h1>
 
 
 
         <br>
-
-          {% for j in myjoblist %}
-
-        <div class="card-column">
-
-        <div class="card animated fadeInUp">
-          <div class="card-body">
-            <p style="font-size:8px;color:#b9b9b9">Application ID {{ j[0].id }} - Applied on {{ j[0].timestamp.strftime('%Y-%m-%d') }}</p>
-            <a href="{{ url_for('applyjob', id=j[1].id) }}" class='text-dark'><h5>{{ j[1].title }}</h5></a>
-            <p>{{ j[1].organization }}</p>
-
-            {% if j[0].status == 'unread' %}
-              <span class="badge badge-pill badge-secondary">Not Read</span>
-              {% elif j[0].status == 'pending' %}
-              <span class="badge badge-pill badge-warning">Pending</span>
-              {% elif j[0].status == 'rejected' %}
-            <span class="badge badge-pill badge-danger">Rejected - {{ j[0].reject_reason }}</span>
-              {% elif j[0].status == 'accepted' %}
-              <span class="badge badge-pill badge-success">Accepted</span>
-            {% endif %}
-
-
-          </div>
-        </div>
-        <br>
-
-    </div>
-
-
-      {% endfor %}
-
-
-
-
-
-
 
 
 
@@ -118,11 +82,6 @@
 
     <!-- Bootstrap core JavaScript -->
 
-    <script>
-    $(document).ready(function() {
-      $("body").tooltip({ selector: '[data-toggle=tooltip]' });
-  });
-  </script>
 
 
   </body>

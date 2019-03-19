@@ -36,99 +36,94 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
           <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('index_reg') }}">Featured Jobs</a>
-            </li>
-            <li class="nav-item active">
-              <a class="nav-link" href="{{ url_for('findjobs') }}">Find Jobs</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('findjobs') }}">More Jobs</a>
-            </li>
-            {% if current_user.role == 'regular' %}
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('myjobs') }}">My Jobs</a>
-            </li>
-            {% endif %}
-
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
-            </li>
-
-
-          </ul>
+          <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Menu
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <h3 class="nav-link dropdown-header text-info">Jobs</h3>
+                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('index_reg') }}">Featured Jobs</a>
+                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('findjobs') }}">Find Jobs</a>
+                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('myjobs')}}">My Jobs</a>
+                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('myjobs')}}">More Jobs</a>
+              <h3 class="nav-link dropdown-header text-info">Profile</h3>
+                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('myprofile', id=current_user.id)}}">My Profile</a>
+                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('myfeedback')}}">My Feedback</a>
+                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('logout') }}">Logout</a>
+            </div>
+          </div>
+         </ul>
         </div>
       </div>
     </nav>
 
     <!-- Page Content -->
-    <div class="container">
-      <br><br><br><br><br>
+   <div class="container">
+     <br><br><br><br><br>
 
 
-      <div id="main">
-        <div class='card-column'>
-        <h1 style="text-align:center">Find Jobs</h1>
-        <br>
+     <div id="main">
+       <div class='card-column'>
+       <h1 style="text-align:center">Find Jobs</h1>
+       <br>
 
-        <div class="d-flex justify-content-center">
+       <div class="d-flex justify-content-center">
 
-            <form method='post' class='form-inline'>
-              {{ form.hidden_tag() }}
+           <form method='post' class='form-inline'>
+             {{ form.hidden_tag() }}
 
-              <div class="form-group mx-sm-3 mb-2">
-              {{ form.keyword(size=100, class_="form-control", placeholder="Search job-related keywords, separated by comma (e.g. Python, Tableau, Developer)") }}
-            </div>
-              {{ form.submit(class_='btn btn-danger mb-2') }}
-
-
-            </form>
-        </div>
-      </div>
-	<br>
-      {% if querystatus == 'success' %}
-      <div class="alert alert-success" role="alert">
-        Your search returned {{ count }} result(s).
-      </div>
-      {% elif querystatus == 'length' %}
-      <div class="alert alert-danger" role="alert">
-        Your search is too short.
-      </div>
-      {% elif querystatus == 'noresult' %}
-      <div class="alert alert-info" role="alert">
-        Your search returned no results.
-      </div>
-      {% endif %}
-      </div>
+             <div class="form-group mx-sm-3 mb-2">
+             {{ form.keyword(size=100, class_="form-control", placeholder="Search job-related keywords, separated by comma (e.g. Python, Tableau, Developer)") }}
+           </div>
+             {{ form.submit(class_='btn btn-danger mb-2') }}
 
 
-        <!-- <br> -->
+           </form>
+       </div>
+     </div>
+ <br>
+     {% if querystatus == 'success' %}
+     <div class="alert alert-success" role="alert">
+       Your search returned {{ count }} result(s).
+     </div>
+     {% elif querystatus == 'length' %}
+     <div class="alert alert-danger" role="alert">
+       Your search is too short.
+     </div>
+     {% elif querystatus == 'noresult' %}
+     <div class="alert alert-info" role="alert">
+       Your search returned no results.
+     </div>
+     {% endif %}
+     </div>
 
 
-        {% if querystatus == 'success' or querystatus == 'no query' %}
-        <div id='allCards' class="card-column">
-      {% for job in queried_jobs %}
-        <div class="card animated fadeInUp cardCount">
-          <div class="card-body">
-            <h5 class="card-title">{{ job.title }} - {{ job.organization }}</h5>
+       <!-- <br> -->
 
-            <p class="card-text"><small class="text-muted">Posted on {{ job.timestamp.strftime('%Y-%m-%d') }} by {{ job.email }}</small></p>
-              <a href="{{ url_for('applyjob', id=job.id) }}"><button type="button" class="btn btn-dark">View</button></a>
-          </div>
-        </div>
-        <br>
-      {% endfor %}
-    </div>
-    {% endif %}
 
-    <div id='result' style='text-align:center'></div><br>
-    <button onclick='loadMore()' type='button' class='btn btn-block btn-light'>Load More</button>
+       {% if querystatus == 'success' or querystatus == 'no query' %}
+       <div id='allCards' class="card-column">
+     {% for job in queried_jobs %}
+       <div class="card animated fadeInUp cardCount">
+         <div class="card-body">
+           <h5 class="card-title">{{ job.title }} - {{ job.organization }}</h5>
 
-        <br><br>
-        </div>
-    </div>
-    <!-- /.container -->
+           <p class="card-text"><small class="text-muted">Posted on {{ job.timestamp.strftime('%Y-%m-%d') }} by {{ job.email }}</small></p>
+             <a href="{{ url_for('applyjob', id=job.id) }}"><button type="button" class="btn btn-dark">View</button></a>
+         </div>
+       </div>
+       <br>
+     {% endfor %}
+   </div>
+   {% endif %}
 
+   <div id='result' style='text-align:center'></div><br>
+   <button onclick='loadMore()' type='button' class='btn btn-block btn-light'>Load More</button>
+
+       <br><br>
+       </div>
+   </div>
+   <!-- /.container -->
     <script>
 
         function loadMore(keywords,manyMore,count) {

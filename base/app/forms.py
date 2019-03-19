@@ -55,16 +55,16 @@ class ApplyJobBtn(FlaskForm):
     submit = SubmitField('Apply')
 
 
-SEX_TABLE = ('','Male','Female')
+SEX_TABLE = ('Undefined','Male','Female')
 
 class EditProfileForm(FlaskForm):
     gender = SelectField('Gender', choices=[(option,option) for option in SEX_TABLE])
-    bio = StringField(u'Text', widget=TextArea())
-    phone_no = IntegerField('Phone Number')
+    bio = StringField(u'Text', widget=TextArea(),validators=[DataRequired()])
+    phone_no = IntegerField('Phone Number',validators=[DataRequired()])
     resume = FileField('Resume', validators=[
         FileAllowed(['docx', 'doc', 'pdf'], 'PDFs (.pdf) and non-macro Word Documents (.doc/.docx) only!')
     ])
-    keywords = StringField(u'Text', widget=TextArea())
+    keywords = StringField(u'Text', widget=TextArea(),validators=[DataRequired()])
     submit = SubmitField('Save Profile')
 
 class AcceptApplicationBtn(FlaskForm):
@@ -81,3 +81,7 @@ class RejectApplicationBtn(FlaskForm):
 class ListingQueryForm(FlaskForm):
     keyword = StringField('Keyword',validators=[DataRequired()])
     submit = SubmitField('Search')
+
+class FeedbackForm(FlaskForm):
+    feedback = StringField('Feedback', widget=TextArea(),validators=[DataRequired()])
+    submit = SubmitField('Submit')

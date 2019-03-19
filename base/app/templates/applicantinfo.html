@@ -97,13 +97,7 @@
 
                   <p style="text-align:center">Gender: {{ user.gender }}</p>
 
-                  <p style="text-align:center">Phone No: {{ user.phone_no }}
-
-                <p style="text-align:center">Rating:
-                {% for i in range(user.stars) %}
-                  &#9733;
-                {% endfor %}
-                </p>
+                  <p style="text-align:center">Phone No: {{ user.phone_no }}</p>
 
                 <p style="text-align:center"><a href="/download_resume/{{ resume_name }}" download>Download Resume</a></p>
                 <hr>

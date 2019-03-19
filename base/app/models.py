@@ -17,7 +17,6 @@ class User(UserMixin, db.Model):
     gender = db.Column(db.String(16),nullable=True)
     bio = db.Column(db.String(1000),nullable=True)
     phone_no = db.Column(db.Integer,nullable=True)
-    stars = db.Column(db.Integer)
     resume_loc = db.Column(db.String(1000),default='')
     keywords = db.Column(db.Text(), nullable=True, default='')
 
@@ -30,6 +29,16 @@ class User(UserMixin, db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+
+class Feedback(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    sent = db.Column(db.String(120), db.ForeignKey('user.email'))
+    received = db.Column(db.String(120), db.ForeignKey('user.email'))
+    feedback_msg = db.Column(db.String(120), nullable=True)
+
+    def __repr__(self):
+        return '<Feedback {}>'.format(self.received)
 
 
 class JobPost(db.Model):

@@ -1,9 +1,9 @@
 import json, requests, socket, os
 from flask import render_template, flash, redirect, url_for, request, jsonify, send_from_directory
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, JobPostForm, EditListingForm, DeleteListingBtn, ApplyJobBtn, EditProfileForm, AcceptApplicationBtn, RejectApplicationBtn, ListingQueryForm
+from app.forms import *
 from flask_login import current_user, login_user, logout_user,login_required
-from app.models import User, JobPost, Application
+from app.models import *
 from werkzeug.urls import url_parse
 from wtforms.validators import ValidationError
 from sqlalchemy import func, or_
@@ -40,7 +40,7 @@ def weisheng2():
     form = RegistrationForm()
     if form.validate_on_submit():
         if 'smu.edu.sg' in form.email.data:
-            user = User(email=form.email.data, role='regular', stars=5, gender='')
+            user = User(email=form.email.data, role='regular', gender='')
             user.set_password(form.password.data)
             db.session.add(user)
             db.session.commit()
@@ -265,6 +265,14 @@ def myprofile(id):
 
 
 
+@app.route('/myfeedback',methods=['GET','POST'])
+@login_required
+def myfeedback():
+
+    return render_template('myfeedback.html')
+
+
+
 @app.route('/index_admin',methods=['GET','POST'])
 @login_required
 def index_admin():
@@ -343,7 +351,7 @@ def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         if 'smu.edu.sg' in form.email.data:
-            user = User(email=form.email.data, role='regular', stars=5, gender='',keywords='',resume_loc='')
+            user = User(email=form.email.data, role='regular', stars=5, gender='Undefined',keywords='',resume_loc='')
             user.set_password(form.password.data)
             db.session.add(user)
             db.session.commit()
@@ -497,6 +505,13 @@ def applicantinfo(id,user_id):
 
         return redirect(url_for('viewapplicants',id=post.id))
     return render_template('applicantinfo.html', post=post, application=application, user=user, form1=form1, form2=form2, resume_name=resume_name)
+
+
+@app.route('/givefeedback/<id>/<user_id>',methods=['GET','POST'])
+@login_required
+def givefeedback(id,user_id):
+    form = FeedbackForm()
+    return render_template('givefeedback.html',form=form)
 
 
 @app.route('/download_resume/<path:filename>', methods=['GET', 'POST'])
