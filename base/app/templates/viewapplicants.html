@@ -77,7 +77,7 @@
 
     <!-- Page Content -->
     <div class="container">
-      <br><br><br><br><br>
+      <br><br><br><br><br><br>
       <h6 style="text-align:center">Applicants for</h6>
       <h1 style="text-align:center">{{ post.title }}</h1>
       <h5 style="text-align:center">{{ post.organization }}</h5>
@@ -103,8 +103,10 @@
               <p class="card-text"><small class="text-muted">Applied on {{ a[0].timestamp.strftime('%Y-%m-%d') }}</small></p>
               <a href='{{ url_for('applicantinfo', id=post.id, user_id=a[1].id) }}'><button type="button" class="btn btn-info">View Profile</button></a>
 
-              {% if a[0].status == 'accepted' %}
-              <a href='{{ url_for('givefeedback', id=post.id, user_id=a[1].id) }}'><button type="button" class="btn btn-secondary">Job Done? Give some feedback...</button></a>
+              {% if a[0].status == 'accepted' and a[0].feedback_given == 'No' %}
+              <a href='{{ url_for('givefeedback', id=post.id, user_id=a[1].id) }}'><button type="button" class="btn btn-light">Job Done? Give some feedback...</button></a>
+              {% elif a[0].status == 'accepted' and a[0].feedback_given == 'Yes' %}
+              <button type="button" class="btn btn-light disabled">Thanks for your feedback.</button>
               {% endif %}
 
 

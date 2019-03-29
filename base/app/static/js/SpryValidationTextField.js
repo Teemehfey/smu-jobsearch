@@ -210,7 +210,7 @@ Spry.Widget.ValidationTextField.ValidationDescriptors = {
 	'email': {
 		characterMasking: /[^\s]/,
 		validation: function(value, options) {
-			var rx = /^[\w\.-]+@\[|SOE.|SIS.|SOSS.|SOA.|SOB.|SOL.|]\.+[smu.edu.sg]+$/i;
+			var rx = /^[\w\.-]+@\[|SOE.smu.edu.sg|SIS.smu.edu.sg|SOSS.smu.edu.sg|SOA.smu.edu.sg|SOB.smu.edu.sg|SOL.smu.edu.sg|]\.$/i;
 			return rx.test(value);
 		}
 	},

@@ -45,7 +45,7 @@
                 <a class="nav-link dropdown-item text-secondary" href="{{ url_for('index_reg') }}">Featured Jobs</a>
                 <a class="nav-link dropdown-item text-secondary" href="{{ url_for('findjobs') }}">Find Jobs</a>
                 <a class="nav-link dropdown-item text-secondary" href="{{ url_for('myjobs')}}">My Jobs</a>
-                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('myjobs')}}">More Jobs</a>
+                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('morejobs')}}">More Jobs</a>
               <h3 class="nav-link dropdown-header text-info">Profile</h3>
                 <a class="nav-link dropdown-item text-secondary" href="{{ url_for('myprofile', id=current_user.id)}}">My Profile</a>
                 <a class="nav-link dropdown-item text-secondary" href="{{ url_for('myfeedback')}}">My Feedback</a>
@@ -59,7 +59,7 @@
 
     <!-- Page Content -->
    <div class="container">
-     <br><br><br><br><br>
+     <br><br><br><br><br><br>
 
 
      <div id="main">
@@ -106,12 +106,17 @@
      {% for job in queried_jobs %}
        <div class="card animated fadeInUp cardCount">
          <div class="card-body">
-           <h5 class="card-title">{{ job.title }} - {{ job.organization }}</h5>
+           <div class="card-title">
 
+            <font size = "5"><b>{{ job.title }} - {{ job.organization }}</b></font>
+            <div class = "float-right">
+              <a href="{{ url_for('applyjob', id=job.id) }}"><button type="button" class="btn btn-dark">View</button></a>
+            </div>
            <p class="card-text"><small class="text-muted">Posted on {{ job.timestamp.strftime('%Y-%m-%d') }} by {{ job.email }}</small></p>
-             <a href="{{ url_for('applyjob', id=job.id) }}"><button type="button" class="btn btn-dark">View</button></a>
+
          </div>
        </div>
+     </div>
        <br>
      {% endfor %}
    </div>
@@ -180,7 +185,7 @@
              }
            } else {
              result.innerHTML = (
-               "<br>That's all folks!"
+               "<br><p>That's all folks!</p>"
              );
            }
 
@@ -192,7 +197,7 @@
     }
     else {
       result.innerHTML = (
-        "<br>That's all folks!"
+        "<br><p>That's all folks!</p>"
       );
     }
   }

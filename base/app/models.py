@@ -67,6 +67,7 @@ class Application(db.Model):
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     status = db.Column(db.String(32))
     reject_reason = db.Column(db.String(32), default='')
+    feedback_given = db.Column(db.String(32), default='No')
 
     def __repr__(self):
         return '<Application {}>'.format(self.id)

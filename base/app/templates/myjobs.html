@@ -47,7 +47,7 @@
                 <a class="nav-link dropdown-item text-secondary" href="{{ url_for('index_reg') }}">Featured Jobs</a>
                 <a class="nav-link dropdown-item text-secondary" href="{{ url_for('findjobs') }}">Find Jobs</a>
                 <a class="nav-link dropdown-item text-secondary" href="{{ url_for('myjobs')}}">My Jobs</a>
-                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('myjobs')}}">More Jobs</a>
+                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('morejobs')}}">More Jobs</a>
               <h3 class="nav-link dropdown-header text-info">Profile</h3>
                 <a class="nav-link dropdown-item text-secondary" href="{{ url_for('myprofile', id=current_user.id)}}">My Profile</a>
                 <a class="nav-link dropdown-item text-secondary" href="{{ url_for('myfeedback')}}">My Feedback</a>
@@ -77,10 +77,10 @@
 
         <div class="card animated fadeInUp">
           <div class="card-body">
-            <p style="font-size:8px;color:#b9b9b9">Application ID {{ j[0].id }} - Applied on {{ j[0].timestamp.strftime('%Y-%m-%d') }}</p>
             <a href="{{ url_for('applyjob', id=j[1].id) }}" class='text-dark'><h5>{{ j[1].title }}</h5></a>
             <p>{{ j[1].organization }}</p>
 
+            <div class = 'float-right'>
             {% if j[0].status == 'unread' %}
               <span class="badge badge-pill badge-secondary">Not Read</span>
               {% elif j[0].status == 'pending' %}
@@ -90,8 +90,12 @@
               {% elif j[0].status == 'accepted' %}
               <span class="badge badge-pill badge-success">Accepted</span>
             {% endif %}
+          </div>
 
+          </div>
 
+          <div class ='card-footer'>
+            <p style="font-size:8px;color:#b9b9b9">Application ID {{ j[0].id }} - Applied on {{ j[0].timestamp.strftime('%Y-%m-%d') }}</p>
           </div>
         </div>
         <br>

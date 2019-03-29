@@ -47,7 +47,7 @@
                 <a class="nav-link dropdown-item text-secondary" href="{{ url_for('index_reg') }}">Featured Jobs</a>
                 <a class="nav-link dropdown-item text-secondary" href="{{ url_for('findjobs') }}">Find Jobs</a>
                 <a class="nav-link dropdown-item text-secondary" href="{{ url_for('myjobs')}}">My Jobs</a>
-                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('myjobs')}}">More Jobs</a>
+                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('morejobs')}}">More Jobs</a>
               <h3 class="nav-link dropdown-header text-info">Profile</h3>
                 <a class="nav-link dropdown-item text-secondary" href="{{ url_for('myprofile', id=current_user.id)}}">My Profile</a>
                 <a class="nav-link dropdown-item text-secondary" href="{{ url_for('myfeedback')}}">My Feedback</a>
@@ -63,16 +63,29 @@
     <div class="container">
       <br><br><br><br><br><br>
 
-
-
         <h1 style="text-align:center">My Feedback</h1>
-
-
 
         <br>
 
+        {% for f in feedbacks %}
 
 
+        <div class="card-column">
+
+        <div class="card animated fadeInUp">
+          <div class="card-body">
+            <p style="font-size:15px;color:#b9b9b9">Feedback from {{ f.sent }}</p>
+            <p>{{ f.feedback_msg }}</p>
+
+
+          </div>
+        </div>
+        <br>
+
+    </div>
+
+
+    {% endfor %}
 
         <br><br>
         </div>

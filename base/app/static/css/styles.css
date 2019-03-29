@@ -1,19 +1,28 @@
-@import url('https://fonts.googleapis.com/css?family=Josefin+Sans');
+@charset "UTF-8";
+
 
 @font-face {
-  font-family: 'JosefinSans';
-  font-style: normal;
-  font-weight: 0;
-  src: url('https://fonts.googleapis.com/css?family=Josefin+Sans');
+  font-family: 'BebasNeue';
+  src: url(../fonts/BebasNeue-Regular.ttf);
 }
+
+@font-face {
+  font-family: 'Roboto';
+  src: url(../fonts/Roboto-Regular-webfont.woff);
+}
+
+
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Josefin Sans', sans-serif;
+  font-family: 'BebasNeue', sans-serif;
+  letter-spacing: 1px;
 }
 
-/* p {
-  font-family:'Calibri',sans-serif;
-} */
+p, a, input, button {
+  font-family:'Roboto',sans-serif;
+  letter-spacing: 0.25px;
+  /* font-weight:bold; */
+}
 
 body.login-bg {
   background: url('../img/login-bg.gif') no-repeat center center fixed;

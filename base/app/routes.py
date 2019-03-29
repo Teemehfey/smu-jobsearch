@@ -268,8 +268,9 @@ def myprofile(id):
 @app.route('/myfeedback',methods=['GET','POST'])
 @login_required
 def myfeedback():
+    feedbacks = Feedback.query.filter_by(received=current_user.email)
 
-    return render_template('myfeedback.html')
+    return render_template('myfeedback.html',feedbacks=feedbacks)
 
 
 
@@ -351,7 +352,7 @@ def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         if 'smu.edu.sg' in form.email.data:
-            user = User(email=form.email.data, role='regular', stars=5, gender='Undefined',keywords='',resume_loc='')
+            user = User(email=form.email.data, role='regular', gender='Undefined',keywords='',resume_loc='')
             user.set_password(form.password.data)
             db.session.add(user)
             db.session.commit()
@@ -371,11 +372,8 @@ def mylistings():
 
     if current_user.role != 'admin':
         return 'You are not authorized to access this page.'
-
     else:
-
         temp_jobs = JobPost.query.filter_by(email=current_user.email).order_by(JobPost.timestamp.desc())
-
         for job in temp_jobs:
             applications = Application.query.filter_by(jobpost_id=job.id)
             total_count = 0
@@ -511,7 +509,25 @@ def applicantinfo(id,user_id):
 @login_required
 def givefeedback(id,user_id):
     form = FeedbackForm()
+    receiver = User.query.filter_by(id=user_id).first_or_404()
+    application = Application.query.filter_by(jobpost_id=id,user_id=user_id).first()
+    if form.validate_on_submit():
+        feedback = Feedback(sent=current_user.email,received=receiver.email,feedback_msg=form.feedback.data)
+        db.session.add(feedback)
+        application.feedback_given = 'Yes'
+        db.session.commit()
+        return redirect(url_for('viewapplicants',id=id))
+
     return render_template('givefeedback.html',form=form)
+
+
+@app.route('/morejobs',methods=['GET','POST'])
+@login_required
+def morejobs():
+    user = User.query.filter_by(id=current_user.id).first_or_404()
+    keywords = user.keywords
+    url = 'https://www.indeed.com.sg/jobs?q={}&l=Singapore&jt=temporary'.format(keywords)
+    return redirect(url)
 
 
 @app.route('/download_resume/<path:filename>', methods=['GET', 'POST'])

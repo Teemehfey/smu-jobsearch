@@ -37,12 +37,12 @@
               Menu
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-              <h3 class="nav-link dropdown-header text-info">Jobs</h3>
+              <h3 style="font-size:25px !important; margin-top:4px;" class="nav-link dropdown-header text-info"><u>Jobs</u></h3>
                 <a class="nav-link dropdown-item text-secondary" href="{{ url_for('index_reg') }}">Featured Jobs</a>
                 <a class="nav-link dropdown-item text-secondary" href="{{ url_for('findjobs') }}">Find Jobs</a>
                 <a class="nav-link dropdown-item text-secondary" href="{{ url_for('myjobs')}}">My Jobs</a>
-                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('myjobs')}}">More Jobs</a>
-              <h3 class="nav-link dropdown-header text-info">Profile</h3>
+                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('morejobs')}}">More Jobs</a>
+              <h3 style="font-size:25px !important; margin-top:4px;" class="nav-link dropdown-header text-info"><u>Profile</u></h3>
                 <a class="nav-link dropdown-item text-secondary" href="{{ url_for('myprofile', id=current_user.id)}}">My Profile</a>
                 <a class="nav-link dropdown-item text-secondary" href="{{ url_for('myfeedback')}}">My Feedback</a>
                 <a class="nav-link dropdown-item text-secondary" href="{{ url_for('logout') }}">Logout</a>
@@ -66,14 +66,18 @@
         <div class="card animate animated fadeInLeft">
 
           <div class="card-body">
-            <h5 class="card-title">TITLE: {{ current_user.email }}</h5>
-            <p class="card-text">Either job description here, pay, or event date details.</p>
+            <class="card-title">
 
-            <div align = 'right'>
-              <a data-toggle="collapse" href="#{{item}}" aria-expanded="true" aria-controls="{{item}}"><button type="button" class="btn btn-secondary">More Info</button></a>
+            <p style='font-size:20px;'><b>TITLE: {{ current_user.email }}</b></p>
+
+            <div class = 'float-right'>
+              <a data-toggle="collapse" href="#{{item}}" aria-expanded="true" aria-controls="{{item}}"><button type="button" class="btn btn-secondary" style="margin-top:0.5px;">More Info</button></a>
               <button type = "button" class = "btn btn-secondary">Apply Now</button>
             </div>
+
+            <p class="card-text">Either job description here, pay, or event date details.</p>
           </div>
+
 
           <div id = "{{item}}" class = "collapse">
               <div class = "card-body">
