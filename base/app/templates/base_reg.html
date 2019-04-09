@@ -1,0 +1,78 @@
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>$MU</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{{url_for('static',filename='vendor/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{{url_for('static',filename='css/styles.css')}}" rel="stylesheet">
+    <link href="{{url_for('static',filename='css/animate.css')}}" rel="stylesheet">
+      <script src="{{url_for('static',filename='vendor/jquery/jquery.min.js')}}"></script>
+
+      <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-137800515-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-137800515-1');
+    </script>
+
+  </head>
+  <!-- style = "background-color:#5DA2D5" -->
+  <body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg fixed-top enable-shadow shadow-sm" style = "background-color:#045593">
+      <div class="container">
+        <a class="navbar-brand" href="#" style="padding-top: 10px;padding-right:25px;"><img src="{{url_for('static',filename='img/$MU.png')}}" width="auto" height="30" alt=""></a>
+        <a class="navbar-brand" style="color:#fff; padding-bottom: 3px;">Welcome,</a>
+        <a class="navbar-brand nav-link nav-item" href="#" style="color:#fff; padding-left:-100px"><i><u>{{current_user.email}}</i></u></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav ml-auto">
+          <div class="dropdown">
+            <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style = "background-color: #90CCF4; border-color:#90CCF4;color:black">
+              Menu
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <h3 style="font-size:25px !important; margin-top:4px; color:#0B365D !important" class="nav-link dropdown-header text-info">Jobs</h3>
+                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('index_reg') }}" style = "font-family:Lato">Featured Jobs</a>
+                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('findjobs') }}">Find Jobs</a>
+                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('myjobs')}}">My Jobs</a>
+                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('morejobs')}}">More Jobs</a>
+              <h3 style="font-size:25px !important; margin-top:4px; color:#0B365D !important" class="nav-link dropdown-header text-info">Profile</h3>
+                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('myprofile', id=current_user.id)}}">My Profile</a>
+                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('myfeedback')}}">My Feedback</a>
+                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('logout') }}">Logout</a>
+            </div>
+          </div>
+         </ul>
+        </div>
+      </div>
+    </nav>
+
+
+  {% block content %}
+
+  {% endblock %}
+
+
+  </body>
+
+
+  <script src="{{url_for('static',filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
+
+
+</html>

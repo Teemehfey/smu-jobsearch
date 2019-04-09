@@ -1,87 +1,39 @@
-<!DOCTYPE html>
-<html lang="en">
-
-  <head>
-
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
-    <title>Apply</title>
-
-    <!-- Bootstrap core CSS -->
-    <link href="{{url_for('static',filename='vendor/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet">
-
-    <!-- Custom styles for this template -->
-    <link href="{{url_for('static',filename='css/styles.css')}}" rel="stylesheet">
-    <link href="{{url_for('static',filename='css/animate.css')}}" rel="stylesheet">
-
-  </head>
-
-  <body class="index-reg-bg">
+{% extends "base_reg.html" %}
 
 
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-      <div class="container">
-        <a class="navbar-brand" href="#" style="padding-top: 10px;padding-right:25px;"><img src="{{url_for('static',filename='img/$MU.png')}}" width="auto" height="30" alt=""></a>
-        <a class="navbar-brand" style="color:#fff; padding-bottom: 3px;">Welcome,</a><a class="navbar-brand" href="{{ url_for('myprofile',id=current_user.id)}}"><i><u>{{current_user.email}}</u></i></a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarResponsive">
-          <ul class="navbar-nav ml-auto">
-          <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Menu
-            </button>
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-              <h3 class="nav-link dropdown-header text-info">Jobs</h3>
-                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('index_reg') }}">Featured Jobs</a>
-                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('findjobs') }}">Find Jobs</a>
-                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('myjobs')}}">My Jobs</a>
-                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('morejobs')}}">More Jobs</a>
-              <h3 class="nav-link dropdown-header text-info">Profile</h3>
-                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('myprofile', id=current_user.id)}}">My Profile</a>
-                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('myfeedback')}}">My Feedback</a>
-                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('logout') }}">Logout</a>
-            </div>
-          </div>
-         </ul>
-        </div>
-      </div>
-    </nav>
-
+{% block content %}
+<br><br><br><br><br><br>
     <!-- Page Content -->
-    <div class="container">
-      <br><br><br><br><br><br>
+    <div class="container d-flex justify-content-center">
 
-      <div class="card animated fadeInLeft">
 
-          <div class="card-header">
-            <a href="{{ url_for('findjobs')}}"><p class="text-info">Back to Jobs</p></a>
-            <h1 style="text-align:center;margin-top:25px;">- {{ job.title }} -</h1>
-            <h4 style="text-align:center">{{ job.organization }}</h4>
+      <div class="card animated fadeInLeft new-card shadow p-1" style="width:60%">
+
+          <!-- <div class="card-header">
+
           </div>
-          <br><br>
+          <br> -->
           <div class="card-body">
-            <h6 style="text-align:center"><u>Job Description:</u></h6>
+
+            <h1 style="text-align:center;margin-top:25px;color:#0B3C5D">{{ job.title }}</h1>
+            <h4 style="text-align:center">{{ job.organization }}</h4>
+
+            <hr>
+
+            <h4 style="text-align:center">Job Description:</h4>
             <p style="text-align:center">{{ job.description }}</p>
 
 
-          <br><br>
+          <br>
 
-            <h6 style="text-align:center"><u>Pay:</u></h6>
+            <h4 style="text-align:center">Pay</h4>
             <p style="text-align:center">${{ job.pay }}, {{ job.pay_frequency }}</p>
-            <!-- <p class="card-text"><b>${{ job.pay }}, {{ job.pay_frequency }}</b></p> -->
-            <!-- <p class="card-text"><small class="text-muted">Posted on {{ job.timestamp.strftime('%Y-%m-%d') }} by {{ job.email }}</small></p> -->
 
 
-          <br><br>
+          <br>
           <div class="d-flex justify-content-center">
             {% if applied == False %}
-          <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#exampleModal">
+          <button type="button" class="btn btn-lg" data-toggle="modal" data-target="#exampleModal" style = "background-color:#FCCE53; color:#fff;">
             Apply for this job
           </button>
           {% endif %}
@@ -121,9 +73,9 @@
         <button type="button" class="btn btn-danger" data-dismiss="modal">No</button>
         <form method="post">
         <!-- <button type="button" class="btn btn-success">Apply</button> -->
-        {{ form.hidden_tag() }}
-      {{ form.submit(class_='btn btn-success') }}
-      </form>
+          {{ form.hidden_tag() }}
+          {{ form.submit(class_='btn', style = "background-color:#FCCE53; color:#fff; margin-top:16.5px") }}
+        </form>
       </div>
     </div>
   </div>
@@ -136,10 +88,4 @@
     </div>
     <!-- /.container -->
 
-    <!-- Bootstrap core JavaScript -->
-    <script src="{{url_for('static',filename='vendor/jquery/jquery.min.js')}}"></script>
-    <script src="{{url_for('static',filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
-
-  </body>
-
-</html>
+{% endblock %}

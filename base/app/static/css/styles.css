@@ -11,6 +11,10 @@
   src: url(../fonts/Roboto-Regular-webfont.woff);
 }
 
+@font-face{
+  font-family: 'Lato';
+  src: url(../fonts/Lato-Regular.ttf);
+}
 
 
 h1, h2, h3, h4, h5, h6 {
@@ -19,8 +23,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 p, a, input, button {
-  font-family:'Roboto',sans-serif;
-  letter-spacing: 0.25px;
+  font-family: 'Lato', sans-serif;
+  /* letter-spacing: 0.25px; */
   /* font-weight:bold; */
 }
 
@@ -45,8 +49,15 @@ body.register-bg {
   padding: 0;
   /* or height: 100vh; */
 }
+
 .modal {
   text-align: center;
+}
+
+.new-card {
+  border-radius:12px;
+  border-color:rgba(0, 0, 0, 0.1);
+  border-width:0.5px;
 }
 
 @media screen and (min-width: 320px) {

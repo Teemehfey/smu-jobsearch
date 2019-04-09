@@ -1,80 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base_admin.html" %}
 
-  <head>
-
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
-    <title>Dashboard</title>
-
-    <!-- Bootstrap core CSS -->
-    <link href="{{url_for('static',filename='vendor/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet">
-
-    <!-- Custom styles for this template -->
-    <link href="{{url_for('static',filename='css/styles.css')}}" rel="stylesheet">
-    <link href="{{url_for('static',filename='css/animate.css')}}" rel="stylesheet">
-      <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.min.css" rel="stylesheet"/>
-    <!-- <link href="css/4-col-portfolio.css" rel="stylesheet"> -->
-
-    <!-- Bootstrap core JavaScript -->
-    <script src="{{url_for('static',filename='vendor/jquery/jquery.min.js')}}"></script>
-    <script src="{{url_for('static',filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
-
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
-    <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"/> -->
-
-
-    <!-- Javascript Libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
-    <script src="https://unpkg.com/popmotion/dist/popmotion.global.min.js"></script>
-
-  </head>
-
-  <body class="index-bg">
-
-
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-      <div class="container">
-        <a class="navbar-brand" href="#" style="padding-top: 10px;padding-right:25px;"><img src="{{url_for('static',filename='img/$MU.png')}}" width="auto" height="30" alt=""></a>
-        <a class="navbar-brand" style="color:#fff; padding-bottom: 3px;">Welcome,</a>
-        <a class="navbar-brand" href="#"><i><u>{{current_user.email}}</u></i></a>
-
-
-
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarResponsive">
-          <ul class="navbar-nav ml-auto">
-
-            <li class="nav-item active">
-              <a class="nav-link" href="#">Dashboard
-                <span class="sr-only">(current)</span>
-              </a>
-            </li>
-
-            <!-- <li class="nav-item">
-              <a class="nav-link" href="" data-toggle="modal" data-target="#myModal" data-backdrop="static" data-keyboard="false">New Listing</a>
-            </li> -->
-
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('mylistings')}}">My Listings</a>
-            </li>
-
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
-            </li>
-
-
-          </ul>
-        </div>
-      </div>
-    </nav>
+{% block content %}
 
     <!-- Page Content -->
     <div class="container">
@@ -85,8 +11,8 @@
 
         <div class="row">
   <div class="col-sm">
-    <div class="card text-white bg-info animated fadeInUp">
-      <div class="card-body" style="text-align:center;">
+    <div class="card text-white animated fadeInUp enable-shadow shadow p-1 border-0" style = "border-radius:25px;">
+      <div class="card-body" style="text-align:center; background-color:#FCCE53; border:none; border-radius:25px;">
 
         <p class="card-title">You currently have</p>
         <h1 class="card-text" style="font-size:60px">{{ listingscount }}</h1>
@@ -101,8 +27,8 @@
   </div>
 
   <div class="col-sm">
-    <div class="card text-white bg-success animated fadeInUp">
-      <div class="card-body" style="text-align:center;">
+    <div class="card text-white animated fadeInUp enable-shadow shadow p-1 border-0" style = "border-radius:25px;">
+      <div class="card-body" style="text-align:center; background-color:#EBBC42; border:none; border-radius:25px;">
         {% if unreadcount != 1 %}
         <p class="card-title">There are</p>
         <h1 class="card-text" style="font-size:60px">{{ unreadcount }}</h1>
@@ -118,8 +44,8 @@
   </div>
 
   <div class="col-sm">
-    <div class="card text-white bg-danger animated fadeInUp">
-      <div class="card-body" style="text-align:center;">
+    <div class="card text-white animated fadeInUp enable-shadow shadow p-1 border-0" style = "border-radius:25px;">
+      <div class="card-body" style="text-align:center; background-color:#D3A529; border:none; border-radius:25px;">
         <p class="card-title">Your latest listing has</p>
         {% if impressions_list|length > 0 %}
         <h1 class="card-text" style="font-size:60px">{{ impressions_list[-1] }}</h1>
@@ -139,14 +65,14 @@
 </div>
 
   <br><br>
-  <div class="card animated fadeInUp">
+  <div class="card animated fadeInUp shadow p-1">
   <div class="card-header">
     <ul class="nav nav-tabs card-header-tabs pull-right"  id="myTab" role="tablist">
       <li class="nav-item">
-       <a class="nav-link active text-success" id="home-tab" data-toggle="tab" href="#stat1" role="tab" aria-controls="stat1" aria-selected="true">Applicants</a>
+       <a class="nav-link active" id="home-tab" data-toggle="tab" href="#stat1" role="tab" aria-controls="stat1" aria-selected="true" style = "color:#EBBC42;">Applicants</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link text-danger" id="profile-tab" data-toggle="tab" href="#stat2" role="tab" aria-controls="stat2" aria-selected="false">Impressions</a>
+        <a class="nav-link" id="profile-tab" data-toggle="tab" href="#stat2" role="tab" aria-controls="stat2" aria-selected="false" style = "color:#D3A529;">Impressions</a>
       </li>
 
     </ul>
@@ -179,7 +105,7 @@
     var chart = new Chart(ctx, {
     // The type of chart we want to create
 
-    type: 'line',
+    type: 'bar',
 
     // The data for our dataset
     data: {
@@ -187,7 +113,7 @@
         datasets: [{
             label: "Applicants",
             // backgroundColor: 'rgb(40, 167, 69)',
-            borderColor: 'rgb(40, 167, 69)',
+            backgroundColor: 'rgb(192, 192, 192, 0.5)',
             data: applicantList,
         }]
     },
@@ -210,7 +136,7 @@ var jobtitleList = {{ jobtitle_list|safe }}
 var impressionsList = {{ impressions_list|safe }}
 var chart2 = new Chart(ctx2, {
 // The type of chart we want to create
-type: 'line',
+type: 'bar',
 
 // The data for our dataset
 
@@ -219,7 +145,7 @@ data: {
     datasets: [{
         label: "Impressions",
         // backgroundColor: 'rgb(220, 53, 69)',
-        borderColor: 'rgb(220, 53, 69)',
+        backgroundColor: 'rgb(192, 192, 192, 0.5)',
         data: impressionsList,
     }]
 },
@@ -239,6 +165,4 @@ options: {
 
 </script>
 
-  </body>
-
-</html>
+{% endblock %}

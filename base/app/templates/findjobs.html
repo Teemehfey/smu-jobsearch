@@ -1,61 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base_reg.html" %}
 
-  <head>
-
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
-    <title>Find Jobs</title>
-
-    <!-- Bootstrap core CSS -->
-    <link href="{{url_for('static',filename='vendor/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet">
-
-    <!-- Jquery -->
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-
-
-    <!-- Custom styles for this template -->
-    <link href="{{url_for('static',filename='css/styles.css')}}" rel="stylesheet">
-    <link href="{{url_for('static',filename='css/animate.css')}}" rel="stylesheet">
-
-  </head>
-
-  <body class="index-reg-bg">
-
-
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-      <div class="container">
-        <a class="navbar-brand" href="#" style="padding-top: 10px;padding-right:25px;"><img src="{{url_for('static',filename='img/$MU.png')}}" width="auto" height="30" alt=""></a>
-        <a class="navbar-brand" style="color:#fff; padding-bottom: 3px;">Welcome,</a><a class="navbar-brand" href="{{ url_for('myprofile',id=current_user.id)}}"><i><u>{{current_user.email}}</u></i></a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarResponsive">
-          <ul class="navbar-nav ml-auto">
-          <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Menu
-            </button>
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-              <h3 class="nav-link dropdown-header text-info">Jobs</h3>
-                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('index_reg') }}">Featured Jobs</a>
-                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('findjobs') }}">Find Jobs</a>
-                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('myjobs')}}">My Jobs</a>
-                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('morejobs')}}">More Jobs</a>
-              <h3 class="nav-link dropdown-header text-info">Profile</h3>
-                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('myprofile', id=current_user.id)}}">My Profile</a>
-                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('myfeedback')}}">My Feedback</a>
-                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('logout') }}">Logout</a>
-            </div>
-          </div>
-         </ul>
-        </div>
-      </div>
-    </nav>
+<body>
+{% block content %}
 
     <!-- Page Content -->
    <div class="container">
@@ -64,7 +10,7 @@
 
      <div id="main">
        <div class='card-column'>
-       <h1 style="text-align:center">Find Jobs</h1>
+       <h1 class="animate animated flipInX" style="text-align:center; color:#0B365D">Find Jobs</h1>
        <br>
 
        <div class="d-flex justify-content-center">
@@ -73,9 +19,9 @@
              {{ form.hidden_tag() }}
 
              <div class="form-group mx-sm-3 mb-2">
-             {{ form.keyword(size=100, class_="form-control", placeholder="Search job-related keywords, separated by comma (e.g. Python, Tableau, Developer)") }}
+             {{ form.keyword(size=100, class_="form-control", placeholder="Search job-related keywords, separated by comma (e.g. Python, Tableau, Developer)", style="border-radius:30px;font-color:#ddd") }}
            </div>
-             {{ form.submit(class_='btn btn-danger mb-2') }}
+             {{ form.submit(id='searchbtn', class_='btn btn-danger mb-2', style="border-radius:50px;background-color:#328CC1; border-color:#328CC1") }}
 
 
            </form>
@@ -83,7 +29,7 @@
      </div>
  <br>
      {% if querystatus == 'success' %}
-     <div class="alert alert-success" role="alert">
+     <div class="alert" role="alert" style="background-color:#F2C44C; color:#fff !important">
        Your search returned {{ count }} result(s).
      </div>
      {% elif querystatus == 'length' %}
@@ -104,13 +50,13 @@
        {% if querystatus == 'success' or querystatus == 'no query' %}
        <div id='allCards' class="card-column">
      {% for job in queried_jobs %}
-       <div class="card animated fadeInUp cardCount">
+       <div class="card animated fadeInUp cardCount new-card shadow p-1">
          <div class="card-body">
            <div class="card-title">
 
-            <font size = "5"><b>{{ job.title }} - {{ job.organization }}</b></font>
+            <h4>{{ job.title }} - {{ job.organization }}</h4>
             <div class = "float-right">
-              <a href="{{ url_for('applyjob', id=job.id) }}"><button type="button" class="btn btn-dark">View</button></a>
+              <a href="{{ url_for('applyjob', id=job.id) }}"><button type="button" class="btn" style="margin-top:-40px; background-color: #F2C44C; border: none; color:#fff">View</button></a>
             </div>
            <p class="card-text"><small class="text-muted">Posted on {{ job.timestamp.strftime('%Y-%m-%d') }} by {{ job.email }}</small></p>
 
@@ -130,6 +76,13 @@
    </div>
    <!-- /.container -->
     <script>
+
+        $(document).ready(function(){
+        	$("#searchbtn").hover(function(){
+        		$(this).toggleClass("animate animated heartbeat");
+        	});
+        });
+
 
         function loadMore(keywords,manyMore,count) {
 
@@ -176,11 +129,9 @@
 
 
                var div = document.createElement("div");
-               div.innerHTML = "<div class='card animated fadeInUp cardCount'><div class='card-body'><h5 class'card-title'>"+combined1+"</h5><p class='card-text'><small class='text-muted'>"+combined2+"</small></p><a href='/applyjob/"+id+"'><button type='button' class='btn btn-dark'>View</button></a></div></div><br>";
+               div.innerHTML = "<div class='card animated fadeInUp cardCount new-card shadow p-1'><div class='card-body'><div class='card-title'><h4>" + combined1 + "</h4><div class = 'float-right'><a href='/applyjob/" + id + "'><button type='button' class='btn' style='margin-top:-40px; background-color: #F2C44C; border: none; color:#fff'>View</button></a></div><p class='card-text'><small class='text-muted'>" + combined2 + "</small></p></div></div></div><br>";
 
-
-
-                document.getElementById("allCards").appendChild(div);
+              document.getElementById("allCards").appendChild(div);
 
              }
            } else {
@@ -205,11 +156,6 @@
 
     </script>
 
+{% endblock %}
 
-    <!-- Bootstrap core JavaScript -->
-    <script src="{{url_for('static',filename='vendor/jquery/jquery.min.js')}}"></script>
-    <script src="{{url_for('static',filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
-
-  </body>
-
-</html>
+</body>

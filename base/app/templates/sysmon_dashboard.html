@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>SYSMON</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{{url_for('static',filename='vendor/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{{url_for('static',filename='css/styles.css')}}" rel="stylesheet">
+    <link href="{{url_for('static',filename='css/animate.css')}}" rel="stylesheet">
+      <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.min.css" rel="stylesheet"/>
+    <!-- <link href="css/4-col-portfolio.css" rel="stylesheet"> -->
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="{{url_for('static',filename='vendor/jquery/jquery.min.js')}}"></script>
+    <script src="{{url_for('static',filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
+
+    <!-- Javascript Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+    <script src="https://unpkg.com/popmotion/dist/popmotion.global.min.js"></script>
+
+  </head>
+
+  <body>
+
+      <br>
+
+      <div class='container'>
+
+          <h1 style="text-align:center;">sysmon dashboard</h1>
+
+          <br>
+
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">CPU</h5>
+                    <div id='cpu'>Retrieving...</div>
+
+                </div>
+              </div>
+            </div>
+
+            <div class="col-sm-6">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">Memory</h5>
+                    <div id='memory'>Retrieving...</div>
+
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <br>
+
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">Network</h5>
+                    <div id='network'>Retrieving...</div>
+
+                </div>
+              </div>
+            </div>
+
+            <div class="col-sm-6">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">Partition</h5>
+                    <div id='partition'>Retrieving...</div>
+
+                </div>
+              </div>
+            </div>
+
+
+
+          </div>
+
+          <br>
+
+          <div>
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Processes</h5>
+                  <div id='process'>Retrieving...</div>
+
+              </div>
+            </div>
+          </div>
+
+
+      </div>
+
+
+
+
+  </body>
+
+
+
+<script>
+  var csrf_token = "{{ csrf_token() }}";
+  var interval = 1000;
+  var longer_interval = 30000;
+
+  $.ajaxSetup({
+      beforeSend: function(xhr, settings) {
+          if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+              xhr.setRequestHeader("X-CSRFToken", csrf_token);
+          }
+      }
+  });
+
+  function getCPU() {
+
+      $.ajax({
+              type: 'GET',
+              url: '/sysmon/cpu/json',
+              data: $(this).serialize(),
+              dataType: 'json',
+              success: function (data) {
+                      var newData = JSON.stringify(data);
+                      // console.log(newData);
+                      var cpuText = document.getElementById("cpu");
+                      // console.log(cpuText);
+                      cpuText.removeChild(cpuText.firstChild);
+                      cpuText.appendChild(cpuText.ownerDocument.createTextNode(newData));
+              },
+              complete: function (data) {
+                      // Schedule the next
+                      setTimeout(getCPU, interval);
+              }
+      });
+  }
+  setTimeout(getCPU,interval);
+
+  function getMemory() {
+
+      $.ajax({
+              type: 'GET',
+              url: '/sysmon/memory/json',
+              data: $(this).serialize(),
+              dataType: 'json',
+              success: function (data) {
+                      var newData = JSON.stringify(data);
+                      // console.log(newData);
+                      var oldText = document.getElementById("memory");
+                      // console.log(oldText);
+                      oldText.removeChild(oldText.firstChild);
+                      oldText.appendChild(oldText.ownerDocument.createTextNode(newData));
+              },
+              complete: function (data) {
+                      // Schedule the next
+                      setTimeout(getMemory, longer_interval);
+              }
+      });
+  }
+
+    setTimeout(getMemory,interval);
+
+
+      function getNetwork() {
+
+          $.ajax({
+                  type: 'GET',
+                  url: '/sysmon/network/json',
+                  data: $(this).serialize(),
+                  dataType: 'json',
+                  success: function (data) {
+                          var newData = JSON.stringify(data);
+                          // console.log(newData);
+                          var oldText = document.getElementById("network");
+                          // console.log(oldText);
+                          oldText.removeChild(oldText.firstChild);
+                          oldText.appendChild(oldText.ownerDocument.createTextNode(newData));
+                  },
+                  complete: function (data) {
+                          // Schedule the next
+                          setTimeout(getNetwork, interval);
+                  }
+          });
+      }
+
+        setTimeout(getNetwork,interval);
+
+        function getProcess() {
+
+            $.ajax({
+                    type: 'GET',
+                    url: '/sysmon/process/json',
+                    data: $(this).serialize(),
+                    dataType: 'json',
+                    success: function (data) {
+                            var newData = JSON.stringify(data);
+                            // console.log(newData);
+                            var oldText = document.getElementById("process");
+                            // console.log(oldText);
+                            oldText.removeChild(oldText.firstChild);
+                            oldText.appendChild(oldText.ownerDocument.createTextNode(newData));
+                    },
+                    complete: function (data) {
+                            // Schedule the next
+                            setTimeout(getProcess, interval);
+                    }
+            });
+        }
+
+          setTimeout(getProcess,interval);
+
+
+      function getPartition() {
+
+          $.ajax({
+                  type: 'GET',
+                  url: '/sysmon/partition/json',
+                  data: $(this).serialize(),
+                  dataType: 'json',
+                  success: function (data) {
+                          var newData = JSON.stringify(data);
+                          // console.log(newData);
+                          var oldText = document.getElementById("partition");
+                          // console.log(oldText);
+                          oldText.removeChild(oldText.firstChild);
+                          oldText.appendChild(oldText.ownerDocument.createTextNode(newData));
+                  },
+                  complete: function (data) {
+                          // Schedule the next
+                          setTimeout(getPartition, longer_interval);
+                  }
+          });
+      }
+
+        setTimeout(getPartition,interval);
+</script>
+
+</html>

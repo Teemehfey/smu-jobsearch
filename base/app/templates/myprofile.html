@@ -1,57 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-
-  <head>
-
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
-    <title>Profile</title>
-
-    <!-- Bootstrap core CSS -->
-    <link href="{{url_for('static',filename='vendor/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet">
-
-    <!-- Custom styles for this template -->
-    <link href="{{url_for('static',filename='css/styles.css')}}" rel="stylesheet">
-    <link href="{{url_for('static',filename='css/animate.css')}}" rel="stylesheet">
-
-  </head>
-
-  <body class="index-reg-bg">
+{% extends "base_reg.html" %}
 
 
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-      <div class="container">
-        <a class="navbar-brand" href="#" style="padding-top: 10px;padding-right:25px;"><img src="{{url_for('static',filename='img/$MU.png')}}" width="auto" height="30" alt=""></a>
-        <a class="navbar-brand" style="color:#fff; padding-bottom: 3px;">Welcome,</a><a class="navbar-brand" href="{{ url_for('myprofile',id=current_user.id)}}"><i><u>{{current_user.email}}</u></i></a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarResponsive">
-          <ul class="navbar-nav ml-auto">
-          <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Menu
-            </button>
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-              <h3 class="nav-link dropdown-header text-info">Jobs</h3>
-                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('index_reg') }}">Featured Jobs</a>
-                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('findjobs') }}">Find Jobs</a>
-                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('myjobs')}}">My Jobs</a>
-                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('morejobs')}}">More Jobs</a>
-              <h3 class="nav-link dropdown-header text-info">Profile</h3>
-                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('myprofile', id=current_user.id)}}">My Profile</a>
-                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('myfeedback')}}">My Feedback</a>
-                <a class="nav-link dropdown-item text-secondary" href="{{ url_for('logout') }}">Logout</a>
-            </div>
-          </div>
-         </ul>
-        </div>
-      </div>
-    </nav>
+{% block content %}
 
     <!-- Page Content -->
     <br><br><br><br><br>
@@ -60,7 +10,7 @@
     <div class="container d-flex justify-content-center">
       <br><br><br><br><br>
 
-      <div class="animated fadeInLeft w-75">
+      <div class="animated fadeInUp w-75">
 
         {% for c in comment %}
 
@@ -69,7 +19,7 @@
           </div>
           {% endfor %}
 
-        <div class="card">
+        <div class="card cardCount new-card shadow p-1">
           <div class="card-header">
             <h1 style="text-align:center;margin-top:25px;">My Profile</h1>
           </div>
@@ -80,11 +30,7 @@
               {{ form.hidden_tag() }}
             <!-- <img src="{{ url_for('static', filename='img/placeholder.jpg')}}" class="img-responsive mx-auto d-block rounded-circle" width="150px" height="150px"> -->
             <!-- <br> -->
-            <h5 style="text-align:center">{{ current_user.email }}</h5>
-            <a href="#"><p style="text-align:center">Reset Password?</p></a>
-            <p style="text-align:center;margin-top:50px"><u>Current Rating:</u></p>
-
-
+            <!-- <h5 style="text-align:center">{{ current_user.email }}</h5> -->
 
               <br>
               <div class="form-group">
@@ -94,7 +40,6 @@
               <div class="col-sm-6">
                 <p style="text-align:center">Gender</p>
                 {{ form.gender(class_="form-control")}}
-                </select>
               </div>
 
               <div class="col-sm-6">
@@ -144,7 +89,7 @@
 
 
               <div class="d-flex justify-content-center">
-              {{ form.submit(class_='btn btn-lg btn-dark') }}
+              {{ form.submit(class_='btn', style = "background-color:#FCCE53; color:#fff;") }}
             </div>
             </form>
 
@@ -191,10 +136,4 @@
   }, false);
     </script>
 
-    <!-- Bootstrap core JavaScript -->
-    <script src="{{url_for('static',filename='vendor/jquery/jquery.min.js')}}"></script>
-    <script src="{{url_for('static',filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
-
-  </body>
-
-</html>
+{% endblock %}

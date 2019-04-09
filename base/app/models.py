@@ -30,6 +30,16 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+    def serialize(self):
+        return {'id': self.id,
+                'role': self.role,
+                'gender': self.gender,
+                'bio': self.bio,
+                'phone_no': self.phone_no,
+                'stars': self.stars,
+                'keywords': self.keywords,
+                'applications' : [a.serialize() for a in self.applications]}
+
 
 class Feedback(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -39,6 +49,14 @@ class Feedback(db.Model):
 
     def __repr__(self):
         return '<Feedback {}>'.format(self.received)
+
+    def serialize(self):
+        return{'id':self.id,
+                'sent':self.sent,
+                'received':self.received,
+                'feedback_msg': self.feedback.msg}
+
+
 
 
 class JobPost(db.Model):
@@ -59,6 +77,20 @@ class JobPost(db.Model):
     def __repr__(self):
         return '<Job {}>'.format(self.title, self.email)
 
+    def serialize(self):
+        return {'id': self.id,
+                'email': self.email,
+                'title': self.title,
+                'timestamp': self.timestamp,
+                'organization': self.organization,
+                'description': self.description,
+                'pay': self.pay,
+                'pay_frequency': self.pay_frequency,
+                'impressions': self.impressions,
+                'keywords': self.keywords
+                #'applications': [a.serialize() for a in self.applications]}
+                }
+
 class Application(db.Model):
     __tablename__ = 'application'
     id = db.Column(db.Integer, primary_key=True)
@@ -71,3 +103,10 @@ class Application(db.Model):
 
     def __repr__(self):
         return '<Application {}>'.format(self.id)
+
+    def serialize(self):
+        return {'id': self.id,
+                'jobpost_id': self.jobpost_id,
+                'user_id': self.user_id,
+                'timestamp': self.timestamp,
+                'status': self.status}

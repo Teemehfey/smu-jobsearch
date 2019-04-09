@@ -4,51 +4,53 @@ from app import app, db
 from app.forms import *
 from flask_login import current_user, login_user, logout_user,login_required
 from app.models import *
+from app.sysmon import *
 from werkzeug.urls import url_parse
 from wtforms.validators import ValidationError
 from sqlalchemy import func, or_
 from werkzeug import secure_filename
 from flask_wtf.file import FileField
 from werkzeug.utils import secure_filename
+import math
 
 
-@app.route('/weisheng',methods=['GET','POST'])
-def weisheng():
-    messages = False
-    if current_user.is_authenticated:
-        return redirect(url_for('index_reg'))
-    form = LoginForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
-        if user is None or not user.check_password(form.password.data):
-            # flash('Invalid username or password')
-            messages = True
-            return render_template('login2.html', title='Sign In', form=form, messages=messages)
-        login_user(user)
-        if user.role == 'regular':
-            return redirect(url_for('index_reg'))
-        elif user.role == 'admin':
-            return redirect(url_for('index_admin'))
-
-    return render_template('login2.html', title='Sign In', form=form)
-
-@app.route('/weisheng2', methods=['GET','POST'])
-def weisheng2():
-    not_smu_email = False
-    if current_user.is_authenticated:
-        return redirect(url_for('index_reg'))
-    form = RegistrationForm()
-    if form.validate_on_submit():
-        if 'smu.edu.sg' in form.email.data:
-            user = User(email=form.email.data, role='regular', gender='')
-            user.set_password(form.password.data)
-            db.session.add(user)
-            db.session.commit()
-            return redirect(url_for('weisheng'))
-        else:
-            not_smu_email = True
-            return render_template('register2.html', title='Register', form=form, not_smu_email=not_smu_email)
-    return render_template('register2.html', title='Register', form=form)
+# @app.route('/weisheng',methods=['GET','POST'])
+# def weisheng():
+#     messages = False
+#     if current_user.is_authenticated:
+#         return redirect(url_for('index_reg'))
+#     form = LoginForm()
+#     if form.validate_on_submit():
+#         user = User.query.filter_by(email=form.email.data).first()
+#         if user is None or not user.check_password(form.password.data):
+#             # flash('Invalid username or password')
+#             messages = True
+#             return render_template('login2.html', title='Sign In', form=form, messages=messages)
+#         login_user(user)
+#         if user.role == 'regular':
+#             return redirect(url_for('index_reg'))
+#         elif user.role == 'admin':
+#             return redirect(url_for('index_admin'))
+#
+#     return render_template('login2.html', title='Sign In', form=form)
+#
+# @app.route('/weisheng2', methods=['GET','POST'])
+# def weisheng2():
+#     not_smu_email = False
+#     if current_user.is_authenticated:
+#         return redirect(url_for('index_reg'))
+#     form = RegistrationForm()
+#     if form.validate_on_submit():
+#         if 'smu.edu.sg' in form.email.data:
+#             user = User(email=form.email.data, role='regular', gender='')
+#             user.set_password(form.password.data)
+#             db.session.add(user)
+#             db.session.commit()
+#             return redirect(url_for('weisheng'))
+#         else:
+#             not_smu_email = True
+#             return render_template('register2.html', title='Register', form=form, not_smu_email=not_smu_email)
+#     return render_template('register2.html', title='Register', form=form)
 
 
 
@@ -56,15 +58,179 @@ def weisheng2():
 @app.route('/index_reg')
 @login_required
 def index_reg():
-    z = []
-    for i in range(10):
-        z.append(i)
+    try:
+        #########1st part, sorting and gettign 3 top jobs based on impressions 
+        job_application = JobPost.query.all()
+        max_list = []
+        max_length = 0
+        for job in job_application:
+            impressions = job.impressions
+            print(impressions)
+            new_list = impressions.split(',')[0:-1]
+            count = len(new_list)
+            if count >= max_length and len(max_list) < 3:
+                max_list.append(job)
+                continue;
 
-    return render_template('index_reg.html',z=z)
+            if count >= max_length and len(max_list) == 3:
+                max_list.pop()
+                max_list.append(job)
 
+        ##########2nd part of api, sorting the 3 jobs by application)
+        job_applications = Application.query.all()
+        locmap = {}
+        for job in job_applications:
+            attrs = job.jobpost_id
+            if(attrs not in locmap):
+                locmap[attrs] = 1
+            else:
+                locmap[attrs] += 1
+
+        #this is a sorted list of job id and applications in the ascending form of [[jobid, no_of_apps], [jobid2, no_of_apps2]]
+        sorted_d = sorted(locmap.items(), key=lambda x: x[1])
+        #top 3 job IDs by application count below
+        top3_list = sorted_d[(len(sorted_d)-3):(len(sorted_d))]
+        top3_ids = []
+        #get the list of top 3 job_post_ids
+        for item in top3_list:
+            top3_ids.append(item[0])
+
+        #define the list that will contain the top 3 job_post objects
+        top3_by_applications = []
+
+        for item in top3_ids:
+            object = JobPost.query.filter_by(id=item).first()
+            top3_by_applications.append(object)
+
+
+        merged_list = max_list + top3_by_applications
+
+        #WAYNE, THIS MERGED_SET IS WHAT YOU WANT FOR THE FEATURED jobs
+        #IT CONTAINS THE TOP 5-6 JOBS WE NEED FOR FEATURED LIST
+        merged_set = set(merged_list)
+
+
+
+        return render_template('index_reg.html',merged_set=merged_set)
+        #return jsonify([s.serialize() for s in top3_by_applications])
+
+    except Exception as e:
+        return (str(e))
+
+
+#GET 3 JOBS WITH HIGHEST IMPRESSION
+#GET 3 JOBS WITH HIGHEST SIGN UPS
 
 def takeSecond(elem):
     return elem[1]
+
+
+# @app.route('/api/top3impression/')
+# def top3impression():
+#     try:
+#         job_application = JobPost.query.all()
+#         max_list = []
+#         max_length = 0
+#         for job in job_application:
+#             impressions = job.impressions
+#             print(impressions)
+#             new_list = impressions.split(',')[0:-1]
+#             count = len(new_list)
+#             if count >= max_length and len(max_list) < 3:
+#                 max_list.append(job)
+#                 continue;
+#
+#             if count >= max_length and len(max_list) == 3:
+#                 max_list.pop()
+#                 max_list.append(job)
+#
+#         ##########2nd part of api, sorting the 3 jobs by application)
+#         job_applications = Application.query.all()
+#         locmap = {}
+#         for job in job_applications:
+#             attrs = job.jobpost_id
+#             if(attrs not in locmap):
+#                 locmap[attrs] = 1
+#             else:
+#                 locmap[attrs] += 1
+#
+#         #this is a sorted list of job id and applications in the ascending form of [[jobid, no_of_apps], [jobid2, no_of_apps2]]
+#         sorted_d = sorted(locmap.items(), key=lambda x: x[1])
+#         #top 3 job IDs by application count below
+#         top3_list = sorted_d[(len(sorted_d)-3):(len(sorted_d))]
+#         top3_ids = []
+#         #get the list of top 3 job_post_ids
+#         for item in top3_list:
+#             top3_ids.append(item[0])
+#
+#         #define the list that will contain the top 3 job_post objects
+#         top3_by_applications = []
+#
+#         for item in top3_ids:
+#             object = JobPost.query.filter_by(id=item).first()
+#             top3_by_applications.append(object)
+#
+#
+#         merged_list = max_list + top3_by_applications
+#
+#         #WAYNE, THIS MERGED_SET IS WHAT YOU WANT FOR THE FEATURED jobs
+#         #IT CONTAINS THE TOP 5-6 JOBS WE NEED FOR FEATURED LIST
+#         merged_set = set(merged_list)
+#
+#
+#
+#         return jsonify([s.serialize() for s in merged_set])
+#         #return jsonify([s.serialize() for s in top3_by_applications])
+#
+#     except Exception as e:
+#         return (str(e))"""
+#
+#
+#
+#
+#
+# #@app.route('/api/top3application/')
+# #def top3application():
+#     try:
+#         job_applications = Application.query.all()
+#         locmap = {}
+#         for job in job_applications:
+#             attrs = job.jobpost_id
+#             if(attrs not in locmap):
+#                 locmap[attrs] = 1
+#             else:
+#                 locmap[attrs] += 1
+#
+#         #this is a sorted list of job id and applications in the ascending form of [[jobid, no_of_apps], [jobid2, no_of_apps2]]
+#         sorted_d = sorted(locmap.items(), key=lambda x: x[1])
+#         #top 3 job IDs by application count below
+#         top3_list = sorted_d[(len(sorted_d)-3):(len(sorted_d))]
+#         top3_ids = []
+#         #get the list of top 3 job_post_ids
+#         for item in top3_list:
+#             top3_ids.append(item[0])
+#
+#         #define the list that will contain the top 3 job_post objects
+#         top3_by_applications = []
+#
+#         for item in top3_ids:
+#             object = JobPost.query.filter_by(id=item).first()
+#             top3_by_applications.append(object)
+#
+#
+#
+#         #return jsonify([s.serialize() for s in top3_by_applications])
+#
+#     except Exception as e:
+#         return (str(e))
+#
+#         merged_list = max_list + top3_by_applications
+#
+#         return jsonify([s.serialize() for s in merged_list])
+
+
+
+
 
 @app.route('/findjobs',methods=['GET','POST'])
 @login_required
@@ -77,7 +243,7 @@ def findjobs():
 
     if form.validate_on_submit() and form.submit.data:
 
-        if form.keyword.data is not '' and len(form.keyword.data) > 1:
+        if form.keyword.data != '' or len(form.keyword.data) > 1:
             kw = form.keyword.data.split(',')
             keywords_entered = []
             for k in kw:
@@ -535,3 +701,178 @@ def download(filename):
     uploads = os.path.join(app.root_path, 'userfiles/resumes')
     # print(uploads)
     return send_from_directory(directory=uploads, filename=filename)
+
+
+######################################################API ROUTES BELOW THIS LINE. 7 IN total########################################################
+
+#ROUTE 1.1 (WORKING). INPUT = USER ID, OUTPUT = NUMBER OF APPLICATIONS AND INFO FOR EACH APPLICATION
+@app.route('/api/data/active_applications/', methods=['GET'])
+def list_of_active_applications_by_id_or_email():
+    if 'id' in request.args:
+        try:
+            user_id = request.args.get('id')
+            job_applications = Application.query.filter_by(user_id=user_id).all()
+
+            if job_applications is None:
+                return "This user has no past job applications"
+
+            application_count = 0
+            for application in job_applications:
+                application_count += 1
+            return jsonify([{"application_count:":application_count}, [application.serialize() for application in job_applications]])
+
+        except Exception as e:
+            return (str(e))
+
+#ROUTE 1.2 (WORKING) INPUT = DATE, OUTPUT = NUMBER OF APPLICATIONS MADE AND INFO FOR EACH APPLICATION
+@app.route('/api/data/application_volume_by_date/', methods=['GET'])
+def application_volume_by_date():
+
+    if 'date' in request.args:
+        try:
+            request_date = request.args.get('date')
+            dated_applications = Application.query.filter_by(timestamp=request_date).all()
+
+            if len(dated_applications) == 0:
+                return "No applications have been made on this date"
+            applicant_count = 0
+            for applicant in dated_applications:
+                applicant_count += 1
+            return jsonify([{"application_count:":applicant_count}, [application.serialize() for application in dated_applications]])
+        except Exception as e:
+            return (str(e))
+
+#ROUTE 1.3 (INCOMPLETE) WEEKLY APPLICATIONS TO QUERIED JOB LISTING ID. E.g. Enter ID for question asker job, will return total number of applicantcants
+#average weekly applicants, no of weeks and the exact number of applicants for each week.
+
+@app.route('/api/data/application_weekly_statistics/', methods=['GET'])
+def applications_date_statistics():
+
+    if 'job_id' in request.args:
+        try:
+            job_id = request.args.get('job_id')
+            job_applications = Application.query.filter_by(jobpost_id=job_id).all()
+
+#get total application count
+
+            applicant_count = 0
+            for applicant in job_applications:
+                applicant_count += 1
+
+            if applicant_count == 0:
+                return "No job applications for this job"
+
+#get current date
+            curr_datetime = datetime.utcnow()
+
+
+#get time of earliest application for this job
+            date_sorted_list = sorted(job_applications, key=lambda application: application.timestamp)
+            earliest_application = date_sorted_list[0]
+
+            #GET TOTAL NUMBER OF DAYS BETWEEN TODAY AND EARLIEST APPLICATION
+
+            time_difference = str(curr_datetime - earliest_application.timestamp)
+            split_string = time_difference.split(',')
+            days = split_string[0]
+            split_days = days.split()
+
+            #THIS VARIABLE BELOW IS THE TOTAL NUMBER OF DAYS
+            num_of_dates = split_days[0]
+
+            #GET NUMBER OF WEEKS
+            total_weeks = math.ceil((int(num_of_dates))/7)
+
+            #GET AVERAGE APPLICATIONS PER WEEK
+            average_per_week = math.ceil(total_weeks/applicant_count)
+
+            #GET A LIST OF SIGN UPS FOR EACH WEEK
+            #for week in range(total_weeks):
+
+            return jsonify([{"applicantcount:":applicant_count},{"current_date:":curr_datetime}, {"time_diff:":time_difference},{"total_weeks:":total_weeks}, [a.serialize() for a in date_sorted_list]])
+
+        except Exception as e:
+            return (str(e))
+
+
+
+#calculate number of weeks that has passed and average weekly applications
+#display exact number of applicants for each weeks
+
+#ROUTE 2.1 (WORKING) INPUT = JOB ID, OUTPUT = ALL INFO PERTAINING TO THAT JOB
+
+
+@app.route('/api/data/job_info/', methods=['GET'])
+def job_info_by_id():
+    if 'job_id' in request.args:
+        try:
+            job_id = request.args.get('job_id')
+            job_info = Jobpost.query.filter_by(id=job_id).first()
+            if job_info is None:
+                return "No existing job posts found with matching job ID"
+            return jsonify(job_info.serialize())
+        except Exception as e:
+            return (str(e))
+
+#ROUTE 2.2 (should be working but keeps giving indent fucking error in putty) JOB IDs  BY Keyword
+@app.route('/api/data/job_ids_by_keyword/', methods=['GET'])
+def job_info_by_keyword():
+
+    if 'keyword' in request.args:
+        try:
+            keyword = request.args.get('keyword')
+            #may need help here to filter with multiple keywords
+            jobs = JobPost.query.filter_by(keywords=keyword).all()
+            if jobs is None:
+                return "No jobs containing such keyword found"
+
+            job_count = 0
+            job_array = []
+            for job in jobs:
+                job_count += 1
+                job_array.append(job.id)
+                    #will this jsonify even work?
+
+            return jsonify([{"job_listings_count:":job_count}, {"job_listing_IDs:":job_array}])
+
+        except Exception as e:
+            return (str(e))
+
+
+
+#ROUTE 2.3 RETURN ALL JOB LISTING IDS BY employer ID
+@app.route('/api/data/job_ids_by_employer_id/', methods=['GET'])
+def job_info_by_emp_id_keyword():
+
+    if 'employer_id' in request.args:
+        try:
+            keyword = request.args.get('employer_id')
+
+            employer = User.query.get(keyword)
+            if employer is None:
+                return "No employer with such ID"
+
+            employer_email = employer.email #or employer[0] which one is correct. apparently the current one is
+
+            job_listings = JobPost.query.filter_by(email=employer_email).all()
+            if job_listings is None:
+                return "No job listings posted by this employer"
+
+            job_count = 0
+            job_array = []
+            for job in job_listings:
+                job_count += 1
+                job_array.append(job.id) #### or job[0]???????) NEED HELP HERE
+                #now serialize this shit and return it
+            return jsonify([{"job_listings_num:":job_count}, {"job_listing_IDs:":job_array}])
+
+        except Exception as e:
+            return (str(e))
+
+
+@app.route('/api/data/getAllJobs', methods =['GET'])
+def get_all_jobs():
+    all_jobs = JobPost.query.all()
+    if all_jobs is None:
+        return "No jobs you wanker"
+    return jsonify([job.serialize() for job in all_jobs])

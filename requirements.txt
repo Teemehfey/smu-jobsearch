@@ -4,6 +4,7 @@ chardet==3.0.4
 Click==7.0
 cymem==2.0.2
 cytoolz==0.9.0.1
+daemon==1.2
 dill==0.2.9
 Flask==1.0.2
 Flask-Login==0.4.1
@@ -24,6 +25,7 @@ numpy==1.16.1
 pkg-resources==0.0.0
 plac==0.9.6
 preshed==2.0.1
+psutil==5.6.1
 psycopg2==2.7.7
 psycopg2-binary==2.7.7
 python-dateutil==2.7.5
